@@ -112,9 +112,8 @@ void main()
         return;
     }
 
-    printf("OpenProcess is ok\n");
-    printf("Now we have handle of process %s\n", PrName);
-    printf("Handle = %d\n\n", hProcess);
+    printf("OpenProcess is OK\n");
+    printf("Handle of process = %d\n\n", hProcess);
 
 
     if (!(BaseAddress = GetModuleBase(PrName, PID)))
@@ -123,8 +122,8 @@ void main()
         system("pause");
         return;
     }
-    printf("GetModuleBase is ok\n");
-    printf("BaseAddress: %llx\n\n", BaseAddress);
+    printf("GetModuleBase is OK\n");
+    printf("BaseAddress = %llx\n\n", BaseAddress);
 
     //DWORD_PTR pBuffer = BaseAddress + 0xA8C306;
     DWORD_PTR pBuffer = search_bytes(hProcess, BaseAddress, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00\xF3", 10);

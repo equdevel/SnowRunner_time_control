@@ -3,6 +3,8 @@
 #include <tlhelp32.h>
 #include <stdint.h>
 
+#define MOD_NOREPEAT 0x4000
+
 
 DWORD get_PID(CHAR * PrName) {
     PROCESSENTRY32 entry;
@@ -82,7 +84,23 @@ void message_box(char* message, UINT uType) {
     MessageBox(NULL, message, "SnowRunner time control", uType);
 }
 
+BOOL patch_memory(HANDLE hProcess, DWORD_PTR pBuffer, char* new_buffer, SIZE_T size) {
+    SIZE_T bytes_written;
+    printf("Memory before injection = ");
+    print_memory(hProcess, pBuffer, size);
+    BOOL result = PatchEx(hProcess, (LPVOID)pBuffer, new_buffer, size, &bytes_written);
+    DWORD last_error = GetLastError();
+    printf("CODE INJECTION:\n");
+    printf("Result code = %d\n", result);
+    printf("Bytes written = %d\n", bytes_written);
+    printf("Last error = %d\n\n", last_error);
+    printf("Memory after injection = ");
+    print_memory(hProcess, pBuffer, size);
+    return result==1 && bytes_written==size && last_error==0;
+}
+
 int main() {
+    MSG messages;
     DWORD PID;
     HANDLE hProcess;
     DWORD_PTR BaseAddress;
@@ -123,29 +141,43 @@ int main() {
         return -1;
     }
 
-    printf("Memory before injection = ");
-    print_memory(hProcess, pBuffer, 9);
+    BOOL result = FALSE;
+    BOOL patched = FALSE;
+    RegisterHotKey(NULL, 1, MOD_CONTROL | MOD_NOREPEAT, VK_MULTIPLY);
+    RegisterHotKey(NULL, 2, MOD_CONTROL | MOD_NOREPEAT, VK_DIVIDE);
+    while (GetMessage (&messages, NULL, 0, 0)) {
+        if(messages.message == WM_HOTKEY)
+            switch(messages.wParam) {
+                case 1:
+                    printf("Ctrl + * hotkey press has been detected!\n");
+                    //INJECTION
+                    if(!patched) {
+                        result = patch_memory(hProcess, pBuffer, "\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9);
+                        if(result) {
+                            patched = TRUE;
+                            printf("SnowRunner timer has been stopped!\n\n");
+                            //message_box("SnowRunner timer has been stopped!", MB_ICONINFORMATION);
+                        }
+                    }
+                    break;
+                case 2:
+                    printf("Ctrl + / hotkey press has been detected!\n");
+                    //RESTORE MEMORY
+                    if(patched) {
+                        result = patch_memory(hProcess, pBuffer, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9);
+                        if(result) {
+                            patched = FALSE;
+                            printf("SnowRunner timer has been started!\n\n");
+                            //message_box("SnowRunner timer has been started!", MB_ICONINFORMATION);
+                        }
+                    }
+                    break;
+            }
+    }
 
-    //INJECTION
-    char new_buffer[9] = "\x90\x90\x90\x90\x90\x90\x90\x90\x90";
-    SIZE_T bytes_written;
-    BOOL result = PatchEx(hProcess, (LPVOID)pBuffer, new_buffer, 9, &bytes_written);
-    DWORD last_error = GetLastError();
-    printf("CODE INJECTION:\n");
-    printf("Result code = %d\n", result);
-    printf("Bytes written = %d\n", bytes_written);
-    printf("Last error = %d\n\n", last_error);
     //DWORD_PTR pInjectedBuffer = (DWORD_PTR)VirtualAllocEx(hProcess, NULL, 9, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     //BOOL result = WriteProcessMemory(hProcess, (LPVOID)pInjectedBuffer, new_buffer, 9, &bytes_written);
     //HANDLE hProcThread = CreateRemoteThread(hProcess, NULL, NULL, (LPTHREAD_START_ROUTINE)pInjectedBuffer, NULL, NULL, NULL);
-
-    printf("Memory after injection = ");
-    print_memory(hProcess, pBuffer, 9);
-
-    if(result==1 && bytes_written==9 && last_error==0) {
-        printf("SnowRunner timer has been stopped!\n\n");
-        message_box("SnowRunner timer has been stopped!", MB_ICONINFORMATION);
-    }
 
     //system("pause");
     return 0;

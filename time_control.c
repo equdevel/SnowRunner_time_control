@@ -78,6 +78,10 @@ DWORD_PTR search_bytes(HANDLE hProcess, DWORD_PTR StartAddress, char *bytes, SIZ
     return 0;
 }
 
+void message_box(char* message, UINT uType) {
+    MessageBox(NULL, message, "SnowRunner time control", uType);
+}
+
 int main() {
     DWORD PID;
     HANDLE hProcess;
@@ -85,21 +89,24 @@ int main() {
     const char *PrName = "SnowRunner.exe";
     if(!(PID = get_PID(PrName))) {
         printf("Process %s not found!\n\n", PrName);
-        system("pause");
+        message_box("SnowRunner.exe not found in memory!\n\nPlease launch SnowRunner before this app.", MB_ICONERROR);
+        //system("pause");
         return -1;
     }
     printf("Process %s found!\n", PrName);
     printf("PID = %d\n\n", PID);
     if(!(hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID))) {
-        printf("OpenProcess error\n\n");
-        system("pause");
+        printf("OpenProcess error!\n\n");
+        message_box("OpenProcess error!", MB_ICONERROR);
+        //system("pause");
         return -1;
     }
     printf("OpenProcess is OK\n");
     printf("Handle of process = %d\n\n", hProcess);
     if(!(BaseAddress = GetModuleBase(PrName, PID))) {
-        printf("GetModuleBase error\n\n");
-        system("pause");
+        printf("GetModuleBase error!\n\n");
+        message_box("GetModuleBase error!", MB_ICONERROR);
+        //system("pause");
         return -1;
     }
     printf("GetModuleBase is OK\n");
@@ -111,7 +118,8 @@ int main() {
         printf("Found pattern address = %llx\n", pBuffer);
     else {
         printf("Pattern not found in memory!\n\n");
-        system("pause");
+        message_box("Pattern not found in memory!\n\nProcess SnowRunner.exe already patched or this app may not be compatible with your version of the game.", MB_ICONERROR);
+        //system("pause");
         return -1;
     }
 
@@ -134,9 +142,11 @@ int main() {
     printf("Memory after injection = ");
     print_memory(hProcess, pBuffer, 9);
 
-    if(result==1 && bytes_written==9 && last_error==0)
-        printf("SnowRunner timer was stopped!\n\n");
+    if(result==1 && bytes_written==9 && last_error==0) {
+        printf("SnowRunner timer has been stopped!\n\n");
+        message_box("SnowRunner timer has been stopped!", MB_ICONINFORMATION);
+    }
 
-    system("pause");
+    //system("pause");
     return 0;
 }

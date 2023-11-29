@@ -125,6 +125,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     RegisterHotKey(NULL, 2, MOD_CONTROL | MOD_NOREPEAT, VK_DIVIDE);
     RegisterHotKey(NULL, 3, MOD_CONTROL | MOD_NOREPEAT, VK_SUBTRACT);
     RegisterHotKey(NULL, 4, MOD_CONTROL | MOD_NOREPEAT, VK_ADD);
+    RegisterHotKey(NULL, 5, MOD_CONTROL | MOD_NOREPEAT, VK_NUMPAD0);
 
     BOOL result = FALSE;
     //BOOL patched = FALSE;
@@ -159,8 +160,14 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
                     break;
                 case 3:
                     printf("\nCtrl + NumPad- hotkey press has been detected!\n");
+                    break;
+                case 4:
+                    printf("\nCtrl + NumPad+ hotkey press has been detected!\n");
+                    break;
+                case 5:
+                    printf("\nCtrl + NumPad0 hotkey press has been detected!\n");
                     //WRITE TO NEW MEMORY REGION
-                    float new_time = 10.25f;
+                    float new_time = 0.0f;
                     //print_hex(&new_time, 4);
                     //printf("\n");
                     SIZE_T bytes_written;
@@ -177,10 +184,6 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
                     memcpy(buf2 + 1, &jmp_offset, 4); //jmp offset
                     memcpy(buf2 + 5, "\x90\x90\x90\x90", 4); //4 nop
                     result = patch_process_memory(hProcess, pBuffer, buf2, 9);
-                    break;
-                case 4:
-                    printf("\nCtrl + NumPad+ hotkey press has been detected!\n");
-                    //WRITE TO NEW MEMORY REGION
                     break;
             }
         /* Translate virtual-key messages into character messages */

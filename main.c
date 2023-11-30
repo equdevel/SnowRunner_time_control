@@ -21,6 +21,84 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
                      LPSTR lpszArgument,
                      int nCmdShow)
 {
+    //INIT
+    DWORD PID;
+    HANDLE hProcess;
+    DWORD_PTR BaseAddress;
+    BOOL result = FALSE;
+    SIZE_T bytes_written = 0;
+    float time=13.0f;
+    char new_mem_buf[50];
+    char inj_pnt_buf[9];
+
+    const char *PrName = "SnowRunner.exe";
+    /*if(get_PID("SnowRunner_time_control.exe")>0) {
+        printf("Only one instance of this app is allowed!\n\n");
+        message_box("Only one instance of this app is allowed!", MB_ICONERROR);
+        return -1;
+    }*/
+    if(!(PID = get_PID(PrName))) {
+        printf("Process %s not found!\n\n", PrName);
+        message_box("SnowRunner.exe not found in memory!\n\nPlease launch SnowRunner before this app.", MB_ICONERROR);
+        return -1;
+    }
+    printf("Process %s found!\n", PrName);
+    printf("PID = %d\n\n", PID);
+    if(!(hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID))) {
+        printf("OpenProcess error!\n\n");
+        message_box("OpenProcess error!", MB_ICONERROR);
+        return -1;
+    }
+    printf("OpenProcess is OK\n");
+    printf("Handle of process = %d\n\n", hProcess);
+    if(!(BaseAddress = GetModuleBase(PrName, PID))) {
+        printf("GetModuleBase error!\n\n");
+        message_box("GetModuleBase error!", MB_ICONERROR);
+        return -1;
+    }
+    printf("GetModuleBase is OK\n");
+    printf("BaseAddress = %llx\n\n", BaseAddress);
+
+    //SEARCH SIGNATURE OFFSET
+    //DWORD_PTR pBuffer = BaseAddress + 0xA8C306;
+    DWORD_PTR pBuffer = search_process_memory(hProcess, BaseAddress, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00\xF3", 10);
+    if(pBuffer != 0)
+        printf("Found pattern address = %llx\n", pBuffer);
+    else {
+        printf("Pattern not found in memory!\n\n");
+        message_box("Pattern not found in memory!\n\nProcess SnowRunner.exe already patched or this app may not be compatible with your version of the game.", MB_ICONERROR);
+        return -1;
+    }
+
+    //ALLOCATE NEW MEMORY REGION
+    DWORD_PTR pNewMemoryRegion = (DWORD_PTR)VirtualAllocEx(hProcess, BaseAddress-0x1000, 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    printf("New memory region address = %llx\n", pNewMemoryRegion);
+    DWORD jmp_offset = pNewMemoryRegion - (pBuffer + 5); // 5 - length of JMP operation for return to injection point
+    DWORD jmp_return_offset = (pBuffer + 5 + 4) - (pNewMemoryRegion + 50);
+    printf("jmp_offset = ");
+    print_hex(&jmp_offset, 4);
+    printf("\n");
+    printf("jmp_return_offset = ");
+    print_hex(&jmp_return_offset, 4);
+    printf("\n");
+
+    //WRITE TO NEW MEMORY REGION
+    memset(new_mem_buf, '\x90', 50); //50 x NOP
+    memcpy(new_mem_buf, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV [r13+00000138],(float)time
+    memcpy(new_mem_buf + 7, &time, 4); //new time = 13:00
+    memcpy(new_mem_buf + 45, "\xE9", 1); //JMP opcode
+    memcpy(new_mem_buf + 46, &jmp_return_offset, 4); //JMP offset
+    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 50, &bytes_written);
+
+    //INJECT JMP
+    memcpy(inj_pnt_buf, "\xE9", 1); //JMP opcode
+    memcpy(inj_pnt_buf + 1, &jmp_offset, 4); //JMP offset
+    memcpy(inj_pnt_buf + 5, "\x90\x90\x90\x90", 4); //4 x NOP
+    result = patch_process_memory(hProcess, pBuffer, inj_pnt_buf, 9);
+
+    //HANDLE hProcThread = CreateRemoteThread(hProcess, NULL, NULL, (LPTHREAD_START_ROUTINE)pInjectedBuffer, NULL, NULL, NULL);
+
+    //GUI Section
     HWND hwnd;               /* This is the handle for our window */
     MSG messages;            /* Here messages to the application are saved */
     WNDCLASSEX wincl;        /* Data structure for the windowclass */
@@ -62,61 +140,6 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
            NULL                 /* No Window Creation data */
            );
 
-    //INIT
-    DWORD PID;
-    HANDLE hProcess;
-    DWORD_PTR BaseAddress;
-    const char *PrName = "SnowRunner.exe";
-    /*if(get_PID("SnowRunner_time_control.exe")>0) {
-        printf("Only one instance of this app is allowed!\n\n");
-        message_box("Only one instance of this app is allowed!", MB_ICONERROR);
-        return -1;
-    }*/
-    if(!(PID = get_PID(PrName))) {
-        printf("Process %s not found!\n\n", PrName);
-        message_box("SnowRunner.exe not found in memory!\n\nPlease launch SnowRunner before this app.", MB_ICONERROR);
-        return -1;
-    }
-    printf("Process %s found!\n", PrName);
-    printf("PID = %d\n\n", PID);
-    if(!(hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID))) {
-        printf("OpenProcess error!\n\n");
-        message_box("OpenProcess error!", MB_ICONERROR);
-        return -1;
-    }
-    printf("OpenProcess is OK\n");
-    printf("Handle of process = %d\n\n", hProcess);
-    if(!(BaseAddress = GetModuleBase(PrName, PID))) {
-        printf("GetModuleBase error!\n\n");
-        message_box("GetModuleBase error!", MB_ICONERROR);
-        return -1;
-    }
-    printf("GetModuleBase is OK\n");
-    printf("BaseAddress = %llx\n\n", BaseAddress);
-
-    //DWORD_PTR pBuffer = BaseAddress + 0xA8C306;
-    DWORD_PTR pBuffer = search_process_memory(hProcess, BaseAddress, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00\xF3", 10);
-    if(pBuffer != 0)
-        printf("Found pattern address = %llx\n", pBuffer);
-    else {
-        printf("Pattern not found in memory!\n\n");
-        message_box("Pattern not found in memory!\n\nProcess SnowRunner.exe already patched or this app may not be compatible with your version of the game.", MB_ICONERROR);
-        return -1;
-    }
-
-    DWORD_PTR pNewMemoryRegion = (DWORD_PTR)VirtualAllocEx(hProcess, BaseAddress-0x1000, 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-    printf("New memory region address = %llx\n", pNewMemoryRegion);
-    DWORD jmp_offset = pNewMemoryRegion - (pBuffer + 5); // 5 - length of JMP operation for return to injection point
-    DWORD jmp_return_offset = (pBuffer + 5 + 4) - (pNewMemoryRegion + 50);
-    printf("jmp_offset = ");
-    print_hex(&jmp_offset, 4);
-    printf("\n");
-    printf("jmp_return_offset = ");
-    print_hex(&jmp_return_offset, 4);
-    printf("\n");
-
-    //HANDLE hProcThread = CreateRemoteThread(hProcess, NULL, NULL, (LPTHREAD_START_ROUTINE)pInjectedBuffer, NULL, NULL, NULL);
-
     /* Make the window visible on the screen */
     ShowWindow (hwnd, nCmdShow);
 
@@ -127,63 +150,48 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     RegisterHotKey(NULL, 4, MOD_CONTROL | MOD_NOREPEAT, VK_ADD);
     RegisterHotKey(NULL, 5, MOD_CONTROL | MOD_NOREPEAT, VK_NUMPAD0);
 
-    BOOL result = FALSE;
-    //BOOL patched = FALSE;
-
     /* Run the message loop. It will run until GetMessage() returns 0 */
     while (GetMessage (&messages, NULL, 0, 0)) {
         if(messages.message == WM_HOTKEY)
             switch(messages.wParam) {
                 case 1:
                     printf("\nCtrl + NumPad* hotkey press has been detected!\n");
-                    //INJECTION
-                    //if(!patched) {
-                        result = patch_process_memory(hProcess, pBuffer, "\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9);
-                        if(result) {
-                            //patched = TRUE;
-                            printf("SnowRunner timer has been stopped!\n");
-                            //message_box("SnowRunner timer has been stopped!", MB_ICONINFORMATION);
-                        }
-                    //}
+                    memset(new_mem_buf, '\x90', 45); //45 x NOP
+                    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+                    if(result)
+                        printf("SnowRunner timer has been stopped!\n");
                     break;
                 case 2:
                     printf("\nCtrl + NumPad/ hotkey press has been detected!\n");
-                    //RESTORE MEMORY
-                    //if(patched) {
-                        result = patch_process_memory(hProcess, pBuffer, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9);
-                        if(result) {
-                            //patched = FALSE;
-                            printf("SnowRunner timer has been started!\n");
-                            //message_box("SnowRunner timer has been started!", MB_ICONINFORMATION);
-                        }
-                    //}
+                    memset(new_mem_buf, '\x90', 45); //45 x NOP
+                    memcpy(new_mem_buf, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9);
+                    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+                    if(result)
+                        printf("SnowRunner timer has been started!\n");
                     break;
                 case 3:
                     printf("\nCtrl + NumPad- hotkey press has been detected!\n");
+                    //ReadProcessMemory(hProcess, (void*)pBuffer, &time, 4, NULL); //get the game time value
+                    inc_time(&time, -1.0f);
+                    memset(new_mem_buf, '\x90', 45); //45 x NOP
+                    memcpy(new_mem_buf, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV [r13+00000138],(float)time
+                    memcpy(new_mem_buf + 7, &time, 4); //new time value
+                    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+                    if(result)
+                        printf("SnowRunner timer has been reduced by one hour!\n");
                     break;
                 case 4:
                     printf("\nCtrl + NumPad+ hotkey press has been detected!\n");
+                    inc_time(&time, 1.0f);
+                    memset(new_mem_buf, '\x90', 45); //45 x NOP
+                    memcpy(new_mem_buf, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV [r13+00000138],(float)time
+                    memcpy(new_mem_buf + 7, &time, 4); //new time value
+                    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+                    if(result)
+                        printf("SnowRunner timer has been increased by one hour!\n");
                     break;
                 case 5:
                     printf("\nCtrl + NumPad0 hotkey press has been detected!\n");
-                    //WRITE TO NEW MEMORY REGION
-                    float new_time = 0.0f;
-                    //print_hex(&new_time, 4);
-                    //printf("\n");
-                    SIZE_T bytes_written;
-                    char buf1[50];
-                    memset(buf1, '\x90', 50);
-                    memcpy(buf1, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //mov [r13+00000138],(float)new_time
-                    //memcpy(buf1, "\x41\x81\x85\x38\x01\x00\x00\x00\x00\x80\x3F", 11); //add [r13+00000138], 1
-                    memcpy(buf1 + 45, "\xE9", 1); //jmp opcode
-                    memcpy(buf1 + 7, &new_time, 4); //new_time
-                    memcpy(buf1 + 46, &jmp_return_offset, 4); //jmp offset
-                    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, buf1, 50, &bytes_written);
-                    //INJECT JMP TO NEW MEMORY REGION
-                    char buf2[9] = "\xE9"; //jmp opcode
-                    memcpy(buf2 + 1, &jmp_offset, 4); //jmp offset
-                    memcpy(buf2 + 5, "\x90\x90\x90\x90", 4); //4 nop
-                    result = patch_process_memory(hProcess, pBuffer, buf2, 9);
                     break;
             }
         /* Translate virtual-key messages into character messages */

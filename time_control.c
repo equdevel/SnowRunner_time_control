@@ -99,13 +99,15 @@ void message_box(char* message, UINT uType) {
 }
 
 void inc_time(float *curr_time, float step) {
-    printf("\nTIME BEFORE INC= %f\n", *curr_time);
+    //printf("\nTIME BEFORE INC= %f\n", *curr_time);
     *curr_time+=step;
-    printf("\nTIME AFTER STEP= %f\n", *curr_time);
+    //printf("\nTIME AFTER STEP= %f\n", *curr_time);
     *curr_time = roundf(*curr_time);
     //*curr_time = rintf(*curr_time);
-    printf("\nTIME AFTER ROUND= %f\n", *curr_time);
-    if(*curr_time < 0) *curr_time = 23.0f;
-    if(*curr_time >= 24.0f) *curr_time = 0.0f;
-    printf("\nTIME AFTER ALL= %f\n", *curr_time);
+    //printf("\nTIME AFTER ROUND= %f\n", *curr_time);
+    if(*curr_time < 0)
+        *curr_time = 24.0f + *curr_time;
+    if(*curr_time >= 24.0f)
+        *curr_time = *curr_time - 24.0f;
+    //printf("\nTIME AFTER ALL= %f\n\n", *curr_time);
 }

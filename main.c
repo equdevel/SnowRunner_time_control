@@ -8,7 +8,7 @@
 #include <windows.h>
 #include "time_control.h"
 
-#define MESSAGE "\n\nPlease do not close this application while the game is running!\n\n\nCtrl + NumPad*    Stop game timer\n\nCtrl + NumPad/    Start game timer\n\nCtrl + NumPad-    Reduce timer by one hour\n\nCtrl + NumPad+    Inrease timer by one hour"
+#define MESSAGE "\n\nThe game timer is stopped and set to 13:00\n\nPlease do not close this application while the game is running!\n\n\nNumPad /    Start game timer\n\nNumPad *    Stop game timer\n\nNumPad -    Reduce timer by 2 hours\n\nNumPad +    Inrease timer by 2 hours"
 
 /*  Declare Windows procedure  */
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
@@ -62,7 +62,6 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     printf("BaseAddress = %llx\n\n", BaseAddress);
 
     //SEARCH SIGNATURE OFFSET
-    //DWORD_PTR pBuffer = BaseAddress + 0xA8C306;
     DWORD_PTR pBuffer = search_process_memory(hProcess, BaseAddress, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00\xF3", 10);
     if(pBuffer != 0)
         printf("Found pattern address = %llx\n", pBuffer);
@@ -87,10 +86,9 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     //WRITE TO NEW MEMORY REGION
     memset(new_mem_buf, '\x90', 50); //50 x NOP
     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
-    //memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV [r13+0x138],(float)time
-    //memcpy(new_mem_buf + 15, &time, 4); //new time = 13:00
-    memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9);
-
+    memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV dword ptr [r13+0x138],(float)time
+    memcpy(new_mem_buf + 15, &time, 4); //new time = 13:00
+    //memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
     memcpy(new_mem_buf + 45, "\xE9", 1); //JMP opcode
     memcpy(new_mem_buf + 46, &jmp_return_offset, 4); //JMP offset
     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 50, &bytes_written);
@@ -101,9 +99,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     memcpy(inj_pnt_buf + 5, "\x90\x90\x90\x90", 4); //4 x NOP
     result = patch_process_memory(hProcess, pBuffer, inj_pnt_buf, 9);
 
-    //HANDLE hProcThread = CreateRemoteThread(hProcess, NULL, NULL, (LPTHREAD_START_ROUTINE)pInjectedBuffer, NULL, NULL, NULL);
-
-    //GUI Section
+    //GUI section
     HWND hwnd;               /* This is the handle for our window */
     MSG messages;            /* Here messages to the application are saved */
     WNDCLASSEX wincl;        /* Data structure for the windowclass */
@@ -149,18 +145,17 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     ShowWindow (hwnd, nCmdShow);
 
     /* Register HotKeys */
-    RegisterHotKey(NULL, 1, MOD_CONTROL | MOD_NOREPEAT, VK_MULTIPLY);
-    RegisterHotKey(NULL, 2, MOD_CONTROL | MOD_NOREPEAT, VK_DIVIDE);
-    RegisterHotKey(NULL, 3, MOD_CONTROL | MOD_NOREPEAT, VK_SUBTRACT);
-    RegisterHotKey(NULL, 4, MOD_CONTROL | MOD_NOREPEAT, VK_ADD);
-    RegisterHotKey(NULL, 5, MOD_CONTROL | MOD_NOREPEAT, VK_NUMPAD0);
+    RegisterHotKey(NULL, 1, MOD_NOREPEAT, VK_MULTIPLY);
+    RegisterHotKey(NULL, 2, MOD_NOREPEAT, VK_DIVIDE);
+    RegisterHotKey(NULL, 3, MOD_NOREPEAT, VK_SUBTRACT);
+    RegisterHotKey(NULL, 4, MOD_NOREPEAT, VK_ADD);
 
     /* Run the message loop. It will run until GetMessage() returns 0 */
     while (GetMessage (&messages, NULL, 0, 0)) {
         if(messages.message == WM_HOTKEY)
             switch(messages.wParam) {
                 case 1:
-                    printf("\nCtrl + NumPad* hotkey press has been detected!\n");
+                    printf("\nNumPad * hotkey press has been detected!\n");
                     memset(new_mem_buf, '\x90', 45); //45 x NOP
                     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
                     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
@@ -168,40 +163,37 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
                         printf("SnowRunner timer has been stopped!\n");
                     break;
                 case 2:
-                    printf("\nCtrl + NumPad/ hotkey press has been detected!\n");
+                    printf("\nNumPad / hotkey press has been detected!\n");
                     memset(new_mem_buf, '\x90', 45); //45 x NOP
                     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
-                    memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9);
+                    memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
                     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
                     if(result)
                         printf("SnowRunner timer has been started!\n");
                     break;
                 case 3:
-                    printf("\nCtrl + NumPad- hotkey press has been detected!\n");
+                    printf("\nNumPad - hotkey press has been detected!\n");
                     ReadProcessMemory(hProcess, (void*)pNewMemoryRegion + 0x32, &time, 4, NULL); //get the game timer value
-                    inc_time(&time, -1.0f);
+                    inc_time(&time, -2.0f);
                     memset(new_mem_buf, '\x90', 45); //45 x NOP
                     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
-                    memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV [r13+0x138],(float)time
+                    memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV dword ptr [r13+0x138],(float)time
                     memcpy(new_mem_buf + 15, &time, 4); //new time value
                     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
                     if(result)
-                        printf("SnowRunner timer has been reduced by one hour!\n");
+                        printf("SnowRunner timer has been reduced by 2 hours!\n");
                     break;
                 case 4:
-                    printf("\nCtrl + NumPad+ hotkey press has been detected!\n");
+                    printf("\nNumPad + hotkey press has been detected!\n");
                     ReadProcessMemory(hProcess, (void*)pNewMemoryRegion + 0x32, &time, 4, NULL); //get the game timer value
-                    inc_time(&time, 1.0f);
+                    inc_time(&time, 2.0f);
                     memset(new_mem_buf, '\x90', 45); //45 x NOP
                     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
-                    memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV [r13+0x138],(float)time
+                    memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV dword ptr [r13+0x138],(float)time
                     memcpy(new_mem_buf + 15, &time, 4); //new time value
                     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
                     if(result)
-                        printf("SnowRunner timer has been increased by one hour!\n");
-                    break;
-                case 5:
-                    printf("\nCtrl + NumPad0 hotkey press has been detected!\n");
+                        printf("SnowRunner timer has been increased by 2 hours!\n");
                     break;
             }
         /* Translate virtual-key messages into character messages */
@@ -211,7 +203,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     }
 
     //RESTORE ALL
-    patch_process_memory(hProcess, pBuffer, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9);
+    patch_process_memory(hProcess, pBuffer, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
     VirtualFreeEx(hProcess, pNewMemoryRegion, 0, MEM_RELEASE);
 
     /* The program return-value is 0 - The value that PostQuitMessage() gave */

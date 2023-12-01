@@ -1,8 +1,6 @@
 #ifndef TIME_CONTROL_H_INCLUDED
 #define TIME_CONTROL_H_INCLUDED
 
-#include <windows.h>
-
 #define MOD_NOREPEAT 0x4000
 
 DWORD get_PID(CHAR *PrName);

@@ -4,7 +4,6 @@
 #include <tlhelp32.h>
 #include "time_control.h"
 
-
 DWORD get_PID(CHAR *PrName) {
     PROCESSENTRY32 entry;
     entry.dwSize = sizeof(PROCESSENTRY32);

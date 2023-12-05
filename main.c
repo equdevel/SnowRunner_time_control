@@ -9,8 +9,6 @@
 #include "time_control.h"
 #include "resource.h"
 
-#define MESSAGE "\n\nThe game timer is stopped and set to 13:00\n\nPlease do not close this application while the game is running!\n\n\nNumPad /    Start game timer\n\nNumPad *    Stop game timer\n\nNumPad -    Reduce timer by 2 hours\n\nNumPad +    Inrease timer by 2 hours"
-
 /*  Declare Windows procedure  */
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 
@@ -18,6 +16,7 @@ LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 TCHAR szClassName[ ] = _T("SnowRunner_time_control");
 
 HWND TextField;
+HWND DonateButton;
 
 int WINAPI WinMain (HINSTANCE hThisInstance,
                      HINSTANCE hPrevInstance,
@@ -104,6 +103,8 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     HWND hwnd;               /* This is the handle for our window */
     MSG messages;            /* Here messages to the application are saved */
     WNDCLASSEX wincl;        /* Data structure for the windowclass */
+    char WindowTitle[50] = "SnowRunner time control v";
+    strcat(WindowTitle, VERSION);
 
     /* The Window structure */
     wincl.hInstance = hThisInstance;
@@ -130,12 +131,12 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     hwnd = CreateWindowEx (
            0,                   /* Extended possibilites for variation */
            szClassName,         /* Classname */
-           _T("SnowRunner time control"),       /* Title Text */
+           _T(WindowTitle),       /* Title Text */
            WS_MINIMIZEBOX | WS_SYSMENU, /* default window */
-           (GetSystemMetrics (SM_CXSCREEN) >> 1) - (500  >> 1),       /* Windows decides the position */
-           (GetSystemMetrics (SM_CYSCREEN) >> 1) - (300 >> 1),       /* where the window ends up on the screen */
-           500,                 /* The programs width */
-           300,                 /* and height in pixels */
+           (GetSystemMetrics (SM_CXSCREEN) >> 1) - (WINDOW_WIDTH >> 1),       /* Windows decides the position */
+           (GetSystemMetrics (SM_CYSCREEN) >> 1) - (WINDOW_HEIGHT >> 1),       /* where the window ends up on the screen */
+           WINDOW_WIDTH,                 /* The programs width */
+           WINDOW_HEIGHT,                 /* and height in pixels */
            HWND_DESKTOP,        /* The window is a child-window to desktop */
            NULL,                /* No menu */
            hThisInstance,       /* Program Instance handler */
@@ -219,7 +220,23 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
     switch (message)                  /* handle the messages */
     {
         case WM_CREATE:
-            TextField = CreateWindow("STATIC", MESSAGE, WS_VISIBLE | WS_CHILD | SS_CENTER, 10, 10, 474, 252, hwnd, NULL, NULL, NULL);
+            TextField = CreateWindow("STATIC", INFO_MESSAGE, WS_VISIBLE | WS_CHILD | SS_CENTER, 10, 10, 474, 252, hwnd, NULL, NULL, NULL);
+            DonateButton = CreateWindow(
+                "BUTTON",    // Predefined class
+                "DONATE",    // Button text
+                WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles
+                200,         // x position
+                272,         // y position
+                100,         // Button width
+                40,          // Button height
+                hwnd,        // Parent window
+                (HMENU)BTN_DONATE,  // menu id
+                NULL,
+                NULL);
+            break;
+        case WM_COMMAND:
+            if(LOWORD(wParam) == BTN_DONATE)
+                ShellExecute(NULL, "open", "https://www.donationalerts.com/r/equdevel", NULL, NULL, SW_SHOWNORMAL);
             break;
         case WM_DESTROY:
             PostQuitMessage(0);       /* send a WM_QUIT to the message queue */

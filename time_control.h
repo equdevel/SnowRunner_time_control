@@ -1,7 +1,12 @@
 #ifndef TIME_CONTROL_H_INCLUDED
 #define TIME_CONTROL_H_INCLUDED
 
+#define VERSION "1.0.5"
 #define MOD_NOREPEAT 0x4000
+#define BTN_DONATE 100
+#define INFO_MESSAGE "\n\nThe game timer is stopped and set to 13:00\n\nPlease do not close this application while the game is running!\n\n\nNumPad /    Start game timer\n\nNumPad *    Stop game timer\n\nNumPad -    Reduce timer by 2 hours\n\nNumPad +    Inrease timer by 2 hours"
+#define WINDOW_WIDTH 500
+#define WINDOW_HEIGHT 350
 
 DWORD get_PID(CHAR *PrName);
 

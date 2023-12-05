@@ -45,12 +45,14 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="resource.h" />
+		<Unit filename="resource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Unit filename="time_control.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="time_control.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="time_control.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

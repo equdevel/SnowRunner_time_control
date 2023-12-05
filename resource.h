@@ -1,0 +1,1 @@
+#define IDI_CLOCK_ICON 101

@@ -7,6 +7,7 @@
 #include <tchar.h>
 #include <windows.h>
 #include "time_control.h"
+#include "resource.h"
 
 #define MESSAGE "\n\nThe game timer is stopped and set to 13:00\n\nPlease do not close this application while the game is running!\n\n\nNumPad /    Start game timer\n\nNumPad *    Stop game timer\n\nNumPad -    Reduce timer by 2 hours\n\nNumPad +    Inrease timer by 2 hours"
 
@@ -112,8 +113,8 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     wincl.cbSize = sizeof (WNDCLASSEX);
 
     /* Use default icon and mouse-pointer */
-    wincl.hIcon = LoadIcon (NULL, IDI_APPLICATION);
-    wincl.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
+    wincl.hIcon = LoadIcon (hThisInstance, MAKEINTRESOURCE(IDI_CLOCK_ICON));
+    wincl.hIconSm = LoadIcon (hThisInstance, MAKEINTRESOURCE(IDI_CLOCK_ICON));
     wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
     wincl.lpszMenuName = NULL;                 /* No menu */
     wincl.cbClsExtra = 0;                      /* No extra bytes after the window class */

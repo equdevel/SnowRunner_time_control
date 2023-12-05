@@ -29,7 +29,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     DWORD_PTR BaseAddress;
     BOOL result = FALSE;
     SIZE_T bytes_written = 0;
-    float time=13.0f;
+    float time = 12.0f;
     char new_mem_buf[50];
     char inj_pnt_buf[9];
 

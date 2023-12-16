@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <windows.h>
 #include <tlhelp32.h>
+#include <math.h>
 #include "time_control.h"
 
 DWORD get_PID(CHAR *PrName) {
@@ -109,4 +110,43 @@ void inc_time(float *curr_time, float step) {
     if(*curr_time >= 24.0f)
         *curr_time = *curr_time - 24.0f;
     //printf("\nTIME AFTER ALL= %f\n\n", *curr_time);
+}
+
+BOOL get_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion, float *time) {
+    SIZE_T bytes_read = 0;
+    BOOL result = ReadProcessMemory(hProcess, (void*)pNewMemoryRegion + 0x32, time, 4, &bytes_read); //get the game timer value
+    return result;
+}
+
+BOOL set_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion, float *time) {
+    BOOL result = FALSE;
+    SIZE_T bytes_written = 0;
+    char new_mem_buf[45];
+    memset(new_mem_buf, '\x90', 45); //45 x NOP
+    memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
+    memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV dword ptr [r13+0x138],(float)time
+    memcpy(new_mem_buf + 15, time, 4); //new time value
+    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+    return result;
+}
+
+BOOL start_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion) {
+    BOOL result = FALSE;
+    SIZE_T bytes_written = 0;
+    char new_mem_buf[45];
+    memset(new_mem_buf, '\x90', 45); //45 x NOP
+    memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
+    memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
+    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+    return result;
+}
+
+BOOL stop_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion) {
+    BOOL result = FALSE;
+    SIZE_T bytes_written = 0;
+    char new_mem_buf[45];
+    memset(new_mem_buf, '\x90', 45); //45 x NOP
+    memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
+    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+    return result;
 }

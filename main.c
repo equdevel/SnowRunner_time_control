@@ -4,6 +4,7 @@
     #define UNICODE
 #endif
 
+#include <stdio.h>
 #include <tchar.h>
 #include <windows.h>
 #include "time_control.h"
@@ -87,7 +88,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     memset(new_mem_buf, '\x90', 50); //50 x NOP
     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
     memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV dword ptr [r13+0x138],(float)time
-    memcpy(new_mem_buf + 15, &time, 4); //new time = 13:00
+    memcpy(new_mem_buf + 15, &time, 4); //new time = 12:00
     //memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
     memcpy(new_mem_buf + 45, "\xE9", 1); //JMP opcode
     memcpy(new_mem_buf + 46, &jmp_return_offset, 4); //JMP offset
@@ -158,42 +159,31 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
             switch(messages.wParam) {
                 case 1:
                     printf("\nNumPad * hotkey press has been detected!\n");
-                    memset(new_mem_buf, '\x90', 45); //45 x NOP
-                    memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
-                    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+                    result = stop_time(hProcess, pNewMemoryRegion);
                     if(result)
                         printf("SnowRunner timer has been stopped!\n");
                     break;
                 case 2:
                     printf("\nNumPad / hotkey press has been detected!\n");
-                    memset(new_mem_buf, '\x90', 45); //45 x NOP
-                    memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
-                    memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
-                    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+                    result = start_time(hProcess, pNewMemoryRegion);
                     if(result)
                         printf("SnowRunner timer has been started!\n");
                     break;
                 case 3:
                     printf("\nNumPad - hotkey press has been detected!\n");
-                    ReadProcessMemory(hProcess, (void*)pNewMemoryRegion + 0x32, &time, 4, NULL); //get the game timer value
+                    get_time(hProcess, pNewMemoryRegion, &time);
                     inc_time(&time, -2.0f);
-                    memset(new_mem_buf, '\x90', 45); //45 x NOP
-                    memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
-                    memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV dword ptr [r13+0x138],(float)time
-                    memcpy(new_mem_buf + 15, &time, 4); //new time value
-                    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+                    result = set_time(hProcess, pNewMemoryRegion, &time);
                     if(result)
                         printf("SnowRunner timer has been reduced by 2 hours!\n");
                     break;
                 case 4:
                     printf("\nNumPad + hotkey press has been detected!\n");
-                    ReadProcessMemory(hProcess, (void*)pNewMemoryRegion + 0x32, &time, 4, NULL); //get the game timer value
+                    get_time(hProcess, pNewMemoryRegion, &time);
                     inc_time(&time, 2.0f);
-                    memset(new_mem_buf, '\x90', 45); //45 x NOP
-                    memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
-                    memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV dword ptr [r13+0x138],(float)time
-                    memcpy(new_mem_buf + 15, &time, 4); //new time value
-                    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+                    result = set_time(hProcess, pNewMemoryRegion, &time);
+                    //sleep(1);
+                    //result = start_time(hProcess, pNewMemoryRegion);
                     if(result)
                         printf("SnowRunner timer has been increased by 2 hours!\n");
                     break;

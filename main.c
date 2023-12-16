@@ -30,6 +30,8 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     DWORD_PTR BaseAddress;
     BOOL result = FALSE;
     SIZE_T bytes_written = 0;
+    BOOL time_stopped = FALSE;
+    BOOL real_time = FALSE;
     float time = 12.0f;
     char new_mem_buf[50];
     char inj_pnt_buf[9];
@@ -93,6 +95,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     memcpy(new_mem_buf + 45, "\xE9", 1); //JMP opcode
     memcpy(new_mem_buf + 46, &jmp_return_offset, 4); //JMP offset
     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 50, &bytes_written);
+    time_stopped = result;
 
     //INJECT JMP
     memcpy(inj_pnt_buf, "\xE9", 1); //JMP opcode
@@ -152,6 +155,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     RegisterHotKey(NULL, 2, MOD_NOREPEAT, VK_DIVIDE);
     RegisterHotKey(NULL, 3, MOD_NOREPEAT, VK_SUBTRACT);
     RegisterHotKey(NULL, 4, MOD_NOREPEAT, VK_ADD);
+    RegisterHotKey(NULL, 5, MOD_NOREPEAT | MOD_CONTROL, VK_DIVIDE);
 
     /* Run the message loop. It will run until GetMessage() returns 0 */
     while (GetMessage (&messages, NULL, 0, 0)) {
@@ -159,35 +163,65 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
             switch(messages.wParam) {
                 case 1:
                     printf("\nNumPad * hotkey press has been detected!\n");
+                    KillTimer(hwnd, IDT_TIMER1);
                     result = stop_time(hProcess, pNewMemoryRegion);
-                    if(result)
+                    if(result) {
+                        time_stopped = TRUE;
                         printf("SnowRunner timer has been stopped!\n");
+                    }
                     break;
                 case 2:
                     printf("\nNumPad / hotkey press has been detected!\n");
+                    KillTimer(hwnd, IDT_TIMER1);
                     result = start_time(hProcess, pNewMemoryRegion);
-                    if(result)
+                    if(result) {
+                        time_stopped = FALSE;
+                        real_time = FALSE;
                         printf("SnowRunner timer has been started!\n");
+                    }
                     break;
                 case 3:
                     printf("\nNumPad - hotkey press has been detected!\n");
                     get_time(hProcess, pNewMemoryRegion, &time);
-                    inc_time(&time, -2.0f);
+                    inc_time(&time, -2.0f, FALSE);
                     result = set_time(hProcess, pNewMemoryRegion, &time);
+                    if(!time_stopped && !real_time) {
+                        Sleep(10);
+                        result = start_time(hProcess, pNewMemoryRegion);
+                    }
                     if(result)
                         printf("SnowRunner timer has been reduced by 2 hours!\n");
                     break;
                 case 4:
                     printf("\nNumPad + hotkey press has been detected!\n");
                     get_time(hProcess, pNewMemoryRegion, &time);
-                    inc_time(&time, 2.0f);
+                    inc_time(&time, 2.0f, FALSE);
                     result = set_time(hProcess, pNewMemoryRegion, &time);
-                    //sleep(1);
-                    //result = start_time(hProcess, pNewMemoryRegion);
+                    if(!time_stopped && !real_time) {
+                        Sleep(10);
+                        result = start_time(hProcess, pNewMemoryRegion);
+                    }
                     if(result)
                         printf("SnowRunner timer has been increased by 2 hours!\n");
                     break;
+                case 5:
+                    //get_time(hProcess, pNewMemoryRegion, &time);
+                    time = get_local_time(); //sync with OS local time
+                    result = set_time(hProcess, pNewMemoryRegion, &time);
+                    if(result) {
+                        SetTimer(hwnd, IDT_TIMER1, 60000, (TIMERPROC) NULL); //real time
+                        time_stopped = FALSE;
+                        real_time = TRUE;
+                    }
+                    break;
             }
+        if(messages.message == WM_TIMER) {
+            if(messages.wParam == IDT_TIMER1) {
+                inc_time(&time, (float)(1.0/60), FALSE);
+                result = set_time(hProcess, pNewMemoryRegion, &time);
+                //printf("\nTICK!\n");
+            }
+        }
         /* Translate virtual-key messages into character messages */
         TranslateMessage(&messages);
         /* Send message to WindowProcedure */
@@ -195,6 +229,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     }
 
     //RESTORE ALL
+    KillTimer(hwnd, IDT_TIMER1);
     patch_process_memory(hProcess, pBuffer, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
     VirtualFreeEx(hProcess, pNewMemoryRegion, 0, MEM_RELEASE);
 

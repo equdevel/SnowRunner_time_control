@@ -98,11 +98,11 @@ void message_box(char* message, UINT uType) {
     MessageBox(NULL, message, "SnowRunner time control", uType);
 }
 
-void inc_time(float *curr_time, float step) {
+void inc_time(float *curr_time, float step, BOOL h_round) {
     //printf("\nTIME BEFORE INC= %f\n", *curr_time);
     *curr_time+=step;
     //printf("\nTIME AFTER STEP= %f\n", *curr_time);
-    *curr_time = roundf(*curr_time);
+    if(h_round) *curr_time = roundf(*curr_time);
     //*curr_time = rintf(*curr_time);
     //printf("\nTIME AFTER ROUND= %f\n", *curr_time);
     if(*curr_time < 0)
@@ -149,4 +149,13 @@ BOOL stop_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion) {
     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
     return result;
+}
+
+float get_local_time() {
+    SYSTEMTIME local_time;
+    GetLocalTime(&local_time);
+    float result_time = local_time.wHour + local_time.wMinute / 60.0;
+    //printf("\nLOCAL_TIME = %d:%d\n", local_time.wHour, local_time.wMinute);
+    //printf("\nLOCAL_TIME (float) = %f\n", result_time);
+    return result_time;
 }

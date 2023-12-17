@@ -5,6 +5,14 @@
 #include <math.h>
 #include "time_control.h"
 
+//GLOBAL VARS
+HANDLE hProcess;
+DWORD_PTR pBuffer;
+DWORD_PTR pNewMemoryRegion;
+BOOL time_stopped = FALSE;
+BOOL real_time = FALSE;
+float time = 12.0f;
+
 DWORD get_PID(CHAR *PrName) {
     PROCESSENTRY32 entry;
     entry.dwSize = sizeof(PROCESSENTRY32);
@@ -80,7 +88,7 @@ DWORD_PTR search_process_memory(HANDLE hProcess, DWORD_PTR StartAddress, char *b
 }
 
 BOOL patch_process_memory(HANDLE hProcess, DWORD_PTR pBuffer, char* new_buffer, SIZE_T size) {
-    SIZE_T bytes_written;
+    SIZE_T bytes_written = 0;
     printf("Memory before injection = ");
     print_process_memory(hProcess, pBuffer, size);
     BOOL result = PatchEx(hProcess, (LPVOID)pBuffer, new_buffer, size, &bytes_written);
@@ -112,13 +120,13 @@ void inc_time(float *curr_time, float step, BOOL h_round) {
     //printf("\nTIME AFTER ALL= %f\n\n", *curr_time);
 }
 
-BOOL get_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion, float *time) {
+BOOL get_time(float *time) {
     SIZE_T bytes_read = 0;
     BOOL result = ReadProcessMemory(hProcess, (void*)pNewMemoryRegion + 0x32, time, 4, &bytes_read); //get the game timer value
     return result;
 }
 
-BOOL set_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion, float *time) {
+BOOL set_time(float *time) {
     BOOL result = FALSE;
     SIZE_T bytes_written = 0;
     char new_mem_buf[45];
@@ -130,7 +138,7 @@ BOOL set_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion, float *time) {
     return result;
 }
 
-BOOL start_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion) {
+BOOL start_time() {
     BOOL result = FALSE;
     SIZE_T bytes_written = 0;
     char new_mem_buf[45];
@@ -141,13 +149,25 @@ BOOL start_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion) {
     return result;
 }
 
-BOOL stop_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion) {
+BOOL stop_time() {
     BOOL result = FALSE;
     SIZE_T bytes_written = 0;
     char new_mem_buf[45];
     memset(new_mem_buf, '\x90', 45); //45 x NOP
     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+    return result;
+}
+
+BOOL shift_time(float *time, float step) {
+    BOOL result = FALSE;
+    result = get_time(time);
+    inc_time(time, step, FALSE);
+    result = set_time(time);
+    if(!time_stopped && !real_time) {
+        Sleep(10);
+        result = start_time();
+    }
     return result;
 }
 
@@ -158,4 +178,86 @@ float get_local_time() {
     //printf("\nLOCAL_TIME = %d:%d\n", local_time.wHour, local_time.wMinute);
     //printf("\nLOCAL_TIME (float) = %f\n", result_time);
     return result_time;
+}
+
+int init_memory() {
+    char *PrName = "SnowRunner.exe";
+    DWORD PID;
+    DWORD_PTR BaseAddress;
+    BOOL result = FALSE;
+    SIZE_T bytes_written = 0;
+    char new_mem_buf[50];
+    char inj_pnt_buf[9];
+
+    /*if(get_PID("SnowRunner_time_control.exe")>0) {
+        printf("Only one instance of this app is allowed!\n\n");
+        message_box("Only one instance of this app is allowed!", MB_ICONERROR);
+        return -1;
+    }*/
+    if(!(PID = get_PID(PrName))) {
+        printf("Process %s not found!\n\n", PrName);
+        message_box("SnowRunner.exe not found in memory!\n\nPlease launch SnowRunner before this app.", MB_ICONERROR);
+        return -1;
+    }
+    printf("Process %s found!\n", PrName);
+    printf("PID = %d\n\n", PID);
+    if(!(hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID))) {
+        printf("OpenProcess error!\n\n");
+        message_box("OpenProcess error!", MB_ICONERROR);
+        return -1;
+    }
+    printf("OpenProcess is OK\n");
+    printf("Handle of process = %d\n\n", hProcess);
+    if(!(BaseAddress = GetModuleBase(PrName, PID))) {
+        printf("GetModuleBase error!\n\n");
+        message_box("GetModuleBase error!", MB_ICONERROR);
+        return -1;
+    }
+    printf("GetModuleBase is OK\n");
+    printf("BaseAddress = %llx\n\n", BaseAddress);
+
+    //SEARCH SIGNATURE OFFSET
+    pBuffer = search_process_memory(hProcess, BaseAddress, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00\xF3", 10);
+    if(pBuffer != 0)
+        printf("Found pattern address = %llx\n", pBuffer);
+    else {
+        printf("Pattern not found in memory!\n\n");
+        message_box("Pattern not found in memory!\n\nProcess SnowRunner.exe already patched or this app may not be compatible with your version of the game.", MB_ICONERROR);
+        return -1;
+    }
+
+    //ALLOCATE NEW MEMORY REGION
+    pNewMemoryRegion = (DWORD_PTR)VirtualAllocEx(hProcess, BaseAddress-0x1000, 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    printf("New memory region address = %llx\n", pNewMemoryRegion);
+    DWORD jmp_offset = pNewMemoryRegion - (pBuffer + 5); // 5 - length of JMP operation for return to injection point
+    DWORD jmp_return_offset = (pBuffer + 5 + 4) - (pNewMemoryRegion + 50);
+    printf("jmp_offset = ");
+    print_hex(&jmp_offset, 4);
+    printf("\n");
+    printf("jmp_return_offset = ");
+    print_hex(&jmp_return_offset, 4);
+    printf("\n");
+
+    //WRITE TO NEW MEMORY REGION
+    memset(new_mem_buf, '\x90', 50); //50 x NOP
+    memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
+    memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV dword ptr [r13+0x138],(float)time
+    memcpy(new_mem_buf + 15, &time, 4); //new time = 12:00
+    //memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
+    memcpy(new_mem_buf + 45, "\xE9", 1); //JMP opcode
+    memcpy(new_mem_buf + 46, &jmp_return_offset, 4); //JMP offset
+    result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 50, &bytes_written);
+    time_stopped = result;
+
+    //INJECT JMP
+    memcpy(inj_pnt_buf, "\xE9", 1); //JMP opcode
+    memcpy(inj_pnt_buf + 1, &jmp_offset, 4); //JMP offset
+    memcpy(inj_pnt_buf + 5, "\x90\x90\x90\x90", 4); //4 x NOP
+    result = patch_process_memory(hProcess, pBuffer, inj_pnt_buf, 9);
+    return 0;
+}
+
+void restore_memory() {
+    patch_process_memory(hProcess, pBuffer, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
+    VirtualFreeEx(hProcess, (LPVOID)pNewMemoryRegion, 0, MEM_RELEASE);
 }

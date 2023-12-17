@@ -2,9 +2,30 @@
 #define TIME_CONTROL_H_INCLUDED
 
 #define VERSION "1.1.0"
+
 #define MOD_NOREPEAT 0x4000
 #define BTN_DONATE 100
-#define IDT_TIMER1 201
+#define IDT_TIMER 200
+
+#define MUL 1
+#define DIV 2
+#define SUB 3
+#define ADD 4
+#define SHIFT_DIV 5
+#define CTRL_SUB 6
+#define SHIFT_SUB 7
+#define ALT_SUB 8
+#define CTRL_ADD 9
+#define SHIFT_ADD 10
+#define ALT_ADD 11
+#define SHIFT_0 12
+#define SHIFT_1 13
+#define SHIFT_2 14
+#define SHIFT_3 15
+#define SHIFT_4 16
+#define SHIFT_5 17
+#define SHIFT_6 18
+
 #define INFO_MESSAGE "\n\nThe game timer is stopped and set to 12:00\n\nPlease do not close this application while the game is running!\n\n\nNumPad /    Start game timer\n\nNumPad *    Stop game timer\n\nNumPad -    Reduce timer by 2 hours\n\nNumPad +    Inrease timer by 2 hours"
 #define WINDOW_WIDTH 500
 #define WINDOW_HEIGHT 350
@@ -27,14 +48,20 @@ void message_box(char* message, UINT uType);
 
 void inc_time(float *curr_time, float step, BOOL h_round);
 
-BOOL get_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion, float *time);
+BOOL get_time(float *time);
 
-BOOL set_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion, float *time);
+BOOL set_time(float *time);
 
-BOOL start_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion);
+BOOL start_time();
 
-BOOL stop_time(HANDLE hProcess, DWORD_PTR pNewMemoryRegion);
+BOOL stop_time();
+
+BOOL shift_time(float *time, float step);
 
 float get_local_time();
+
+int init_memory();
+
+void restore_memory();
 
 #endif // TIME_CONTROL_H_INCLUDED

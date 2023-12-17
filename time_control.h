@@ -25,6 +25,14 @@
 #define SHIFT_4 16
 #define SHIFT_5 17
 #define SHIFT_6 18
+#define ALT_0 19
+#define ALT_1 20
+#define ALT_2 21
+#define ALT_3 22
+#define ALT_4 23
+#define ALT_5 24
+#define ALT_6 25
+#define ALT_DIV 26
 
 #define INFO_MESSAGE "\n\nThe game timer is stopped and set to 12:00\n\nPlease do not close this application while the game is running!\n\n\nNumPad /    Start game timer\n\nNumPad *    Stop game timer\n\nNumPad -    Reduce timer by 2 hours\n\nNumPad +    Inrease timer by 2 hours"
 #define WINDOW_WIDTH 500
@@ -57,6 +65,8 @@ BOOL start_time();
 BOOL stop_time();
 
 BOOL shift_time(float *time, float step);
+
+BOOL set_time_rate(HWND hWnd, float *time, unsigned char rate_factor, BOOL sync_real_time);
 
 float get_local_time();
 

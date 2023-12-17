@@ -13,7 +13,7 @@
 //GLOBAL VARS
 extern float time;
 extern BOOL time_stopped;
-extern BOOL real_time;
+extern BOOL custom_time_rate;
 TCHAR szClassName[] = _T("SnowRunner_time_control"); /*  Make the class name into a global variable  */
 HWND TextField;
 HWND DonateButton;
@@ -60,8 +60,8 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
            szClassName,         /* Classname */
            _T(WindowTitle),       /* Title Text */
            WS_MINIMIZEBOX | WS_SYSMENU, /* default window */
-           (GetSystemMetrics(SM_CXSCREEN) >> 1) - (WINDOW_WIDTH >> 1),       /* Windows decides the position */
-           (GetSystemMetrics(SM_CYSCREEN) >> 1) - (WINDOW_HEIGHT >> 1),       /* where the window ends up on the screen */
+           (GetSystemMetrics(SM_CXSCREEN) >> 1) - (WINDOW_WIDTH >> 1),       /* Window will appear in the center of the screen */
+           (GetSystemMetrics(SM_CYSCREEN) >> 1) - (WINDOW_HEIGHT >> 1),
            WINDOW_WIDTH,                 /* The programs width */
            WINDOW_HEIGHT,                 /* and height in pixels */
            HWND_DESKTOP,        /* The window is a child-window to desktop */
@@ -78,7 +78,20 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
     RegisterHotKey(NULL, DIV, MOD_NOREPEAT, VK_DIVIDE);
     RegisterHotKey(NULL, SUB, MOD_NOREPEAT, VK_SUBTRACT);
     RegisterHotKey(NULL, ADD, MOD_NOREPEAT, VK_ADD);
-    RegisterHotKey(NULL, SHIFT_DIV, MOD_NOREPEAT | MOD_SHIFT, VK_DIVIDE);
+    RegisterHotKey(NULL, CTRL_SUB, MOD_NOREPEAT | MOD_CONTROL, VK_SUBTRACT);
+    RegisterHotKey(NULL, SHIFT_SUB, MOD_NOREPEAT | MOD_SHIFT, VK_SUBTRACT);
+    RegisterHotKey(NULL, ALT_SUB, MOD_NOREPEAT | MOD_ALT, VK_SUBTRACT);
+    RegisterHotKey(NULL, CTRL_ADD, MOD_NOREPEAT | MOD_CONTROL, VK_ADD);
+    RegisterHotKey(NULL, SHIFT_ADD, MOD_NOREPEAT | MOD_SHIFT, VK_ADD);
+    RegisterHotKey(NULL, ALT_ADD, MOD_NOREPEAT | MOD_ALT, VK_ADD);
+    RegisterHotKey(NULL, ALT_DIV, MOD_NOREPEAT | MOD_ALT, VK_DIVIDE);
+    RegisterHotKey(NULL, ALT_0, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD0);
+    RegisterHotKey(NULL, ALT_1, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD1);
+    RegisterHotKey(NULL, ALT_2, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD2);
+    RegisterHotKey(NULL, ALT_3, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD3);
+    RegisterHotKey(NULL, ALT_4, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD4);
+    RegisterHotKey(NULL, ALT_5, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD5);
+    RegisterHotKey(NULL, ALT_6, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD6);
 
     /* Run the message loop. It will run until GetMessage() returns 0 */
     while(GetMessage(&msg, NULL, 0, 0)) {
@@ -99,7 +112,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     result = start_time();
                     if(result) {
                         time_stopped = FALSE;
-                        real_time = FALSE;
+                        custom_time_rate = FALSE;
                         printf("SnowRunner timer has been started!\n");
                     }
                     break;
@@ -133,15 +146,30 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                 case ALT_ADD:
                     result = shift_time(&time, 4.0f);
                     break;
-                case SHIFT_DIV:
-                    //get_time(&time);
-                    time = get_local_time(); //sync with OS local time
-                    result = set_time(&time);
-                    if(result) {
-                        SetTimer(hwnd, IDT_TIMER, 60000, (TIMERPROC) NULL); //real time
-                        time_stopped = FALSE;
-                        real_time = TRUE;
-                    }
+                case ALT_DIV:
+                    //KillTimer(hwnd, IDT_TIMER);
+                    result = set_time_rate(hwnd, &time, 1, TRUE);
+                    break;
+                case ALT_0:
+                    result = set_time_rate(hwnd, &time, 10, FALSE);
+                    break;
+                case ALT_1:
+                    result = set_time_rate(hwnd, &time, 1, FALSE);
+                    break;
+                case ALT_2:
+                    result = set_time_rate(hwnd, &time, 2, FALSE);
+                    break;
+                case ALT_3:
+                    result = set_time_rate(hwnd, &time, 3, FALSE);
+                    break;
+                case ALT_4:
+                    result = set_time_rate(hwnd, &time, 4, FALSE);
+                    break;
+                case ALT_5:
+                    result = set_time_rate(hwnd, &time, 5, FALSE);
+                    break;
+                case ALT_6:
+                    result = set_time_rate(hwnd, &time, 6, FALSE);
                     break;
             }
         /* Translate virtual-key messages into character messages */

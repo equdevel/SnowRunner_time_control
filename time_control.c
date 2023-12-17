@@ -10,7 +10,7 @@ HANDLE hProcess;
 DWORD_PTR pSignature;
 DWORD_PTR pNewMemoryRegion;
 BOOL time_stopped = FALSE;
-BOOL real_time = FALSE;
+BOOL custom_time_rate = FALSE;
 float time = 12.0f;
 
 DWORD get_PID(CHAR *PrName) {
@@ -164,9 +164,24 @@ BOOL shift_time(float *time, float step) {
     result = get_time(time);
     inc_time(time, step, FALSE);
     result = set_time(time);
-    if(!time_stopped && !real_time) {
+    if(!time_stopped && !custom_time_rate) {
         Sleep(10);
         result = start_time();
+    }
+    return result;
+}
+
+BOOL set_time_rate(HWND hWnd, float *time, unsigned char rate_factor, BOOL sync_real_time) {
+    BOOL result = FALSE;
+    if(sync_real_time)
+        *time = get_local_time(); //sync with OS local time
+    else
+        get_time(time);
+    result = set_time(time);
+    if(result) {
+        SetTimer(hWnd, IDT_TIMER, 60000/rate_factor, (TIMERPROC) NULL);
+        time_stopped = FALSE;
+        custom_time_rate = TRUE;
     }
     return result;
 }

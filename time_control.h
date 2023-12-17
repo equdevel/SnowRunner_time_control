@@ -34,15 +34,15 @@ DWORD get_PID(CHAR *PrName);
 
 DWORD_PTR GetModuleBase(char *lpModuleName, DWORD dwProcessId);
 
-BOOL PatchEx(HANDLE hProcess, LPVOID dst, LPCVOID src, SIZE_T size, SIZE_T *BytesWritten);
+BOOL PatchEx(HANDLE hProcess, LPVOID dst_addr, LPCVOID src_addr, SIZE_T size, SIZE_T *bytes_written);
 
 void print_hex(char *str, int len);
 
-void print_process_memory(HANDLE hProcess, DWORD_PTR pBuffer, SIZE_T size);
+void print_process_memory(HANDLE hProcess, DWORD_PTR addr, SIZE_T size);
 
 DWORD_PTR search_process_memory(HANDLE hProcess, DWORD_PTR StartAddress, char *bytes, SIZE_T size);
 
-BOOL patch_process_memory(HANDLE hProcess, DWORD_PTR pBuffer, char* new_buffer, SIZE_T size);
+BOOL patch_process_memory(HANDLE hProcess, DWORD_PTR dst_addr, char* src_addr, SIZE_T size);
 
 void message_box(char* message, UINT uType);
 

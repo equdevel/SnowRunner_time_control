@@ -52,8 +52,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
     wincl.hbrBackground = (HBRUSH)COLOR_BACKGROUND;
 
     /* Register the window class, and if it fails quit the program */
-    if (!RegisterClassEx (&wincl))
-        return 0;
+    if(!RegisterClassEx(&wincl)) return 0;
 
     /* The class is registered, let's create the program*/
     hwnd = CreateWindowEx(
@@ -115,6 +114,24 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     result = shift_time(&time, 2.0f);
                     if(result)
                         printf("SnowRunner timer has been increased by 2 hours!\n");
+                    break;
+                case CTRL_SUB:
+                    result = shift_time(&time, -1.0f);
+                    break;
+                case SHIFT_SUB:
+                    result = shift_time(&time, -3.0f);
+                    break;
+                case ALT_SUB:
+                    result = shift_time(&time, -4.0f);
+                    break;
+                case CTRL_ADD:
+                    result = shift_time(&time, 1.0f);
+                    break;
+                case SHIFT_ADD:
+                    result = shift_time(&time, 3.0f);
+                    break;
+                case ALT_ADD:
+                    result = shift_time(&time, 4.0f);
                     break;
                 case SHIFT_DIV:
                     //get_time(&time);

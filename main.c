@@ -171,6 +171,46 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                 case ALT_6:
                     result = set_time_rate(&time, 6, FALSE);
                     break;
+                case CTRL_0:
+                    time = 0.0f;
+                    result = set_time(&time);
+                    break;
+                case CTRL_1:
+                    time = 10.0f;
+                    result = set_time(&time);
+                    break;
+                case CTRL_2:
+                    time = 12.0f;
+                    result = set_time(&time);
+                    break;
+                case CTRL_3:
+                    time = 13.0f;
+                    result = set_time(&time);
+                    break;
+                case CTRL_4:
+                    time = 14.0f;
+                    result = set_time(&time);
+                    break;
+                case CTRL_5:
+                    time = 15.0f;
+                    result = set_time(&time);
+                    break;
+                case CTRL_6:
+                    time = 6.0f;
+                    result = set_time(&time);
+                    break;
+                case CTRL_7:
+                    time = 17.0f;
+                    result = set_time(&time);
+                    break;
+                case CTRL_8:
+                    time = 18.0f;
+                    result = set_time(&time);
+                    break;
+                case CTRL_9:
+                    time = 9.0f;
+                    result = set_time(&time);
+                    break;
             }
         /* Translate virtual-key messages into character messages */
         TranslateMessage(&msg);

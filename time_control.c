@@ -16,7 +16,7 @@ float time = 12.0f;
 DWORD get_PID(CHAR *PrName) {
     PROCESSENTRY32 entry;
     entry.dwSize = sizeof(PROCESSENTRY32);
-    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if(Process32First(snapshot, &entry)) {
         while(Process32Next(snapshot, &entry)) {
             if(strcmp(entry.szExeFile, PrName) == 0)
@@ -24,13 +24,13 @@ DWORD get_PID(CHAR *PrName) {
         }
     }
     CloseHandle(snapshot);
-    return NULL;
+    return 0;
 }
 
 DWORD_PTR GetModuleBase(char *lpModuleName, DWORD dwProcessId) {
     MODULEENTRY32 lpModuleEntry = { 0 };
     HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwProcessId);
-    if(!hSnapShot) return NULL;
+    if(!hSnapShot) return 0;
     lpModuleEntry.dwSize = sizeof(lpModuleEntry);
     BOOL bModule = Module32First(hSnapShot, &lpModuleEntry);
     while(bModule) {
@@ -41,7 +41,7 @@ DWORD_PTR GetModuleBase(char *lpModuleName, DWORD dwProcessId) {
         bModule = Module32Next(hSnapShot, &lpModuleEntry);
     }
     CloseHandle(hSnapShot);
-    return NULL;
+    return 0;
 }
 
 BOOL PatchEx(HANDLE hProcess, LPVOID dst_addr, LPCVOID src_addr, SIZE_T size, SIZE_T *bytes_written) {
@@ -60,9 +60,9 @@ void print_hex(char *str, int len) {
 void print_process_memory(HANDLE hProcess, DWORD_PTR addr, SIZE_T size) {
     SIZE_T bytes_read = 0;
     char local_buffer[size];
-    ReadProcessMemory(hProcess, (void*)addr, &local_buffer, size, &bytes_read);
+    ReadProcessMemory(hProcess, (LPVOID)addr, &local_buffer, size, &bytes_read);
     print_hex(local_buffer, size);
-    printf("\nBytes read = %d\n", bytes_read);
+    printf("\nBytes read = %d\n", (int)bytes_read);
 }
 
 DWORD_PTR search_process_memory(HANDLE hProcess, DWORD_PTR StartAddress, char *bytes, SIZE_T size) {
@@ -70,8 +70,8 @@ DWORD_PTR search_process_memory(HANDLE hProcess, DWORD_PTR StartAddress, char *b
     char local_buffer[READ_SIZE];
     SIZE_T bytes_read = 0;
     DWORD_PTR Address = StartAddress;
-    while(ReadProcessMemory(hProcess, (void*)Address, &local_buffer, READ_SIZE, &bytes_read)) {
-        BOOL found = TRUE;
+    BOOL found;
+    while(ReadProcessMemory(hProcess, (LPVOID)Address, &local_buffer, READ_SIZE, &bytes_read)) {
         for(int i=0; i<bytes_read-size+1; i++) {
             found = TRUE;
             for(int j=0; j<size; j++) {
@@ -95,11 +95,11 @@ BOOL patch_process_memory(HANDLE hProcess, DWORD_PTR dst_addr, char* src_addr, S
     DWORD last_error = GetLastError();
     printf("CODE INJECTION:\n");
     printf("Result code = %d\n", result);
-    printf("Bytes written = %d\n", bytes_written);
-    printf("Last error = %d\n", last_error);
+    printf("Bytes written = %d\n", (int)bytes_written);
+    printf("Last error = %d\n", (int)last_error);
     printf("Memory after injection = ");
     print_process_memory(hProcess, dst_addr, size);
-    return result==1 && bytes_written==size && last_error==0;
+    return result==1 && bytes_written==size; // && last_error==0;
 }
 
 void message_box(char* message, UINT uType) {
@@ -122,7 +122,7 @@ void inc_time(float *curr_time, float step, BOOL h_round) {
 
 BOOL get_time(float *time) {
     SIZE_T bytes_read = 0;
-    BOOL result = ReadProcessMemory(hProcess, (void*)pNewMemoryRegion + 0x32, time, 4, &bytes_read); //get the game timer value
+    BOOL result = ReadProcessMemory(hProcess, (LPVOID)(pNewMemoryRegion + 0x32), time, 4, &bytes_read); //get the game timer value
     return result;
 }
 
@@ -215,7 +215,7 @@ int init_memory() {
         return -1;
     }
     printf("Process %s found!\n", PrName);
-    printf("PID = %d\n\n", PID);
+    printf("PID = %d\n\n", (int)PID);
     if(!(hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID))) {
         printf("OpenProcess error!\n\n");
         message_box("OpenProcess error!", MB_ICONERROR);
@@ -242,15 +242,15 @@ int init_memory() {
     }
 
     //ALLOCATE NEW MEMORY REGION
-    pNewMemoryRegion = (DWORD_PTR)VirtualAllocEx(hProcess, BaseAddress-0x1000, 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    pNewMemoryRegion = (DWORD_PTR)VirtualAllocEx(hProcess, (LPVOID)(BaseAddress-0x1000), 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
     printf("New memory region address = %llx\n", pNewMemoryRegion);
     DWORD jmp_offset = pNewMemoryRegion - (pSignature + 5); // 5 - length of JMP operation for return to injection point
     DWORD jmp_return_offset = (pSignature + 5 + 4) - (pNewMemoryRegion + 50);
     printf("jmp_offset = ");
-    print_hex(&jmp_offset, 4);
+    print_hex((char*)&jmp_offset, 4);
     printf("\n");
     printf("jmp_return_offset = ");
-    print_hex(&jmp_return_offset, 4);
+    print_hex((char*)&jmp_return_offset, 4);
     printf("\n");
 
     //WRITE TO NEW MEMORY REGION

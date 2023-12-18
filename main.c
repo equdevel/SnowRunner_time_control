@@ -190,7 +190,6 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
 /*  This function is called by the Windows function DispatchMessage()  */
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-    BOOL result = FALSE;
     /* handle the messages */
     switch(message) {
         case WM_CREATE:
@@ -215,7 +214,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
         case WM_TIMER:
             if(wParam == IDT_TIMER) {
                 inc_time(&time, (float)(1.0/60), FALSE);
-                result = set_time(&time);
+                set_time(&time);
                 //printf("\nTICK!\n");
             }
             break;

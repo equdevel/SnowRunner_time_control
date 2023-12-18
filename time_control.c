@@ -6,6 +6,7 @@
 #include "time_control.h"
 
 //GLOBAL VARS
+extern HWND hwnd;
 HANDLE hProcess;
 DWORD_PTR pSignature;
 DWORD_PTR pNewMemoryRegion;
@@ -44,7 +45,7 @@ DWORD_PTR GetModuleBase(char *lpModuleName, DWORD dwProcessId) {
     return 0;
 }
 
-BOOL PatchEx(HANDLE hProcess, LPVOID dst_addr, LPCVOID src_addr, SIZE_T size, SIZE_T *bytes_written) {
+BOOL PatchEx(LPVOID dst_addr, LPCVOID src_addr, SIZE_T size, SIZE_T *bytes_written) {
     DWORD old_protect;
     VirtualProtectEx(hProcess, dst_addr, size, PAGE_EXECUTE_READWRITE, &old_protect);
     BOOL result = WriteProcessMemory(hProcess, dst_addr, src_addr, size, bytes_written);
@@ -57,7 +58,7 @@ void print_hex(char *str, int len) {
         printf("%02x", (unsigned char)str[i]);
 }
 
-void print_process_memory(HANDLE hProcess, DWORD_PTR addr, SIZE_T size) {
+void print_process_memory(DWORD_PTR addr, SIZE_T size) {
     SIZE_T bytes_read = 0;
     char local_buffer[size];
     ReadProcessMemory(hProcess, (LPVOID)addr, &local_buffer, size, &bytes_read);
@@ -65,7 +66,7 @@ void print_process_memory(HANDLE hProcess, DWORD_PTR addr, SIZE_T size) {
     printf("\nBytes read = %d\n", (int)bytes_read);
 }
 
-DWORD_PTR search_process_memory(HANDLE hProcess, DWORD_PTR StartAddress, char *bytes, SIZE_T size) {
+DWORD_PTR search_process_memory(DWORD_PTR StartAddress, char *bytes, SIZE_T size) {
     const int READ_SIZE = 102400*size; //Read 1000 Kbytes (in our case, size of the search sequence = 10 bytes)
     char local_buffer[READ_SIZE];
     SIZE_T bytes_read = 0;
@@ -87,18 +88,18 @@ DWORD_PTR search_process_memory(HANDLE hProcess, DWORD_PTR StartAddress, char *b
     return 0;
 }
 
-BOOL patch_process_memory(HANDLE hProcess, DWORD_PTR dst_addr, char* src_addr, SIZE_T size) {
+BOOL patch_process_memory(DWORD_PTR dst_addr, char* src_addr, SIZE_T size) {
     SIZE_T bytes_written = 0;
     printf("Memory before injection = ");
-    print_process_memory(hProcess, dst_addr, size);
-    BOOL result = PatchEx(hProcess, (LPVOID)dst_addr, src_addr, size, &bytes_written);
+    print_process_memory(dst_addr, size);
+    BOOL result = PatchEx((LPVOID)dst_addr, src_addr, size, &bytes_written);
     DWORD last_error = GetLastError();
     printf("CODE INJECTION:\n");
     printf("Result code = %d\n", result);
     printf("Bytes written = %d\n", (int)bytes_written);
     printf("Last error = %d\n", (int)last_error);
     printf("Memory after injection = ");
-    print_process_memory(hProcess, dst_addr, size);
+    print_process_memory(dst_addr, size);
     return result==1 && bytes_written==size; // && last_error==0;
 }
 
@@ -171,7 +172,7 @@ BOOL shift_time(float *time, float step) {
     return result;
 }
 
-BOOL set_time_rate(HWND hWnd, float *time, unsigned char rate_factor, BOOL sync_real_time) {
+BOOL set_time_rate(float *time, unsigned char rate_factor, BOOL sync_real_time) {
     BOOL result = FALSE;
     if(sync_real_time)
         *time = get_local_time(); //sync with OS local time
@@ -179,7 +180,7 @@ BOOL set_time_rate(HWND hWnd, float *time, unsigned char rate_factor, BOOL sync_
         get_time(time);
     result = set_time(time);
     if(result) {
-        SetTimer(hWnd, IDT_TIMER, 60000/rate_factor, (TIMERPROC) NULL);
+        SetTimer(hwnd, IDT_TIMER, 60000/rate_factor, (TIMERPROC) NULL);
         time_stopped = FALSE;
         custom_time_rate = TRUE;
     }
@@ -221,8 +222,8 @@ int init_memory() {
         message_box("OpenProcess error!", MB_ICONERROR);
         return -1;
     }
-    printf("OpenProcess is OK\n");
-    printf("Handle of process = %d\n\n", hProcess);
+    printf("OpenProcess is OK\n\n");
+    //printf("Handle of process = %d\n\n", hProcess);
     if(!(BaseAddress = GetModuleBase(PrName, PID))) {
         printf("GetModuleBase error!\n\n");
         message_box("GetModuleBase error!", MB_ICONERROR);
@@ -232,7 +233,7 @@ int init_memory() {
     printf("BaseAddress = %llx\n\n", BaseAddress);
 
     //SEARCH SIGNATURE OFFSET
-    pSignature = search_process_memory(hProcess, BaseAddress, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00\xF3", 10);
+    pSignature = search_process_memory(BaseAddress, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00\xF3", 10);
     if(pSignature != 0)
         printf("Found pattern address = %llx\n", pSignature);
     else {
@@ -242,7 +243,7 @@ int init_memory() {
     }
 
     //ALLOCATE NEW MEMORY REGION
-    pNewMemoryRegion = (DWORD_PTR)VirtualAllocEx(hProcess, (LPVOID)(BaseAddress-0x1000), 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    pNewMemoryRegion = (DWORD_PTR)VirtualAllocEx(hProcess, (LPVOID)(BaseAddress - 0x1000), 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
     printf("New memory region address = %llx\n", pNewMemoryRegion);
     DWORD jmp_offset = pNewMemoryRegion - (pSignature + 5); // 5 - length of JMP operation for return to injection point
     DWORD jmp_return_offset = (pSignature + 5 + 4) - (pNewMemoryRegion + 50);
@@ -268,11 +269,11 @@ int init_memory() {
     memcpy(inj_pnt_buf, "\xE9", 1); //JMP opcode
     memcpy(inj_pnt_buf + 1, &jmp_offset, 4); //JMP offset
     memcpy(inj_pnt_buf + 5, "\x90\x90\x90\x90", 4); //4 x NOP
-    result = patch_process_memory(hProcess, pSignature, inj_pnt_buf, 9);
+    result = patch_process_memory(pSignature, inj_pnt_buf, 9);
     return 0;
 }
 
 void restore_memory() {
-    patch_process_memory(hProcess, pSignature, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
+    patch_process_memory(pSignature, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
     VirtualFreeEx(hProcess, (LPVOID)pNewMemoryRegion, 0, MEM_RELEASE);
 }

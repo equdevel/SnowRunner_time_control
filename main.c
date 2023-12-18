@@ -15,6 +15,7 @@ extern float time;
 extern BOOL time_stopped;
 extern BOOL custom_time_rate;
 TCHAR szClassName[] = _T("SnowRunner_time_control"); /*  Make the class name into a global variable  */
+HWND hwnd;                                           /* This is the handle for our window */
 HWND TextField;
 HWND DonateButton;
 
@@ -28,7 +29,6 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
     if(result == -1) return 0;
 
     //GUI section
-    HWND hwnd;               /* This is the handle for our window */
     MSG msg;            /* Here messages to the application are saved */
     WNDCLASSEX wincl;        /* Data structure for the windowclass */
     char WindowTitle[50] = "SnowRunner time control v";
@@ -148,28 +148,28 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     break;
                 case ALT_DIV:
                     //KillTimer(hwnd, IDT_TIMER);
-                    result = set_time_rate(hwnd, &time, 1, TRUE);
+                    result = set_time_rate(&time, 1, TRUE);
                     break;
                 case ALT_0:
-                    result = set_time_rate(hwnd, &time, 10, FALSE);
+                    result = set_time_rate(&time, 10, FALSE);
                     break;
                 case ALT_1:
-                    result = set_time_rate(hwnd, &time, 1, FALSE);
+                    result = set_time_rate(&time, 1, FALSE);
                     break;
                 case ALT_2:
-                    result = set_time_rate(hwnd, &time, 2, FALSE);
+                    result = set_time_rate(&time, 2, FALSE);
                     break;
                 case ALT_3:
-                    result = set_time_rate(hwnd, &time, 3, FALSE);
+                    result = set_time_rate(&time, 3, FALSE);
                     break;
                 case ALT_4:
-                    result = set_time_rate(hwnd, &time, 4, FALSE);
+                    result = set_time_rate(&time, 4, FALSE);
                     break;
                 case ALT_5:
-                    result = set_time_rate(hwnd, &time, 5, FALSE);
+                    result = set_time_rate(&time, 5, FALSE);
                     break;
                 case ALT_6:
-                    result = set_time_rate(hwnd, &time, 6, FALSE);
+                    result = set_time_rate(&time, 6, FALSE);
                     break;
             }
         /* Translate virtual-key messages into character messages */

@@ -42,15 +42,15 @@ DWORD get_PID(CHAR *PrName);
 
 DWORD_PTR GetModuleBase(char *lpModuleName, DWORD dwProcessId);
 
-BOOL PatchEx(HANDLE hProcess, LPVOID dst_addr, LPCVOID src_addr, SIZE_T size, SIZE_T *bytes_written);
+BOOL PatchEx(LPVOID dst_addr, LPCVOID src_addr, SIZE_T size, SIZE_T *bytes_written);
 
 void print_hex(char *str, int len);
 
-void print_process_memory(HANDLE hProcess, DWORD_PTR addr, SIZE_T size);
+void print_process_memory(DWORD_PTR addr, SIZE_T size);
 
-DWORD_PTR search_process_memory(HANDLE hProcess, DWORD_PTR StartAddress, char *bytes, SIZE_T size);
+DWORD_PTR search_process_memory(DWORD_PTR StartAddress, char *bytes, SIZE_T size);
 
-BOOL patch_process_memory(HANDLE hProcess, DWORD_PTR dst_addr, char* src_addr, SIZE_T size);
+BOOL patch_process_memory(DWORD_PTR dst_addr, char* src_addr, SIZE_T size);
 
 void message_box(char* message, UINT uType);
 
@@ -66,7 +66,7 @@ BOOL stop_time();
 
 BOOL shift_time(float *time, float step);
 
-BOOL set_time_rate(HWND hWnd, float *time, unsigned char rate_factor, BOOL sync_real_time);
+BOOL set_time_rate(float *time, unsigned char rate_factor, BOOL sync_real_time);
 
 float get_local_time();
 

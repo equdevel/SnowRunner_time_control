@@ -26,7 +26,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
     //INIT
     BOOL result = FALSE;
     result = init_memory();
-    if(result == -1) return 0;
+    //if(result == -1) return 0;
 
     //GUI section
     MSG msg;            /* Here messages to the application are saved */
@@ -92,6 +92,16 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
     RegisterHotKey(NULL, ALT_4, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD4);
     RegisterHotKey(NULL, ALT_5, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD5);
     RegisterHotKey(NULL, ALT_6, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD6);
+    RegisterHotKey(NULL, CTRL_0, MOD_NOREPEAT | MOD_CONTROL, VK_NUMPAD0);
+    RegisterHotKey(NULL, CTRL_1, MOD_NOREPEAT | MOD_CONTROL, VK_NUMPAD1);
+    RegisterHotKey(NULL, CTRL_2, MOD_NOREPEAT | MOD_CONTROL, VK_NUMPAD2);
+    RegisterHotKey(NULL, CTRL_3, MOD_NOREPEAT | MOD_CONTROL, VK_NUMPAD3);
+    RegisterHotKey(NULL, CTRL_4, MOD_NOREPEAT | MOD_CONTROL, VK_NUMPAD4);
+    RegisterHotKey(NULL, CTRL_5, MOD_NOREPEAT | MOD_CONTROL, VK_NUMPAD5);
+    RegisterHotKey(NULL, CTRL_6, MOD_NOREPEAT | MOD_CONTROL, VK_NUMPAD6);
+    RegisterHotKey(NULL, CTRL_7, MOD_NOREPEAT | MOD_CONTROL, VK_NUMPAD7);
+    RegisterHotKey(NULL, CTRL_8, MOD_NOREPEAT | MOD_CONTROL, VK_NUMPAD8);
+    RegisterHotKey(NULL, CTRL_9, MOD_NOREPEAT | MOD_CONTROL, VK_NUMPAD9);
 
     /* Run the message loop. It will run until GetMessage() returns 0 */
     while(GetMessage(&msg, NULL, 0, 0)) {

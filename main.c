@@ -16,7 +16,7 @@ extern BOOL time_stopped;
 extern BOOL custom_time_rate;
 TCHAR szClassName[] = _T("SnowRunner_time_control"); /*  Make the class name into a global variable  */
 HWND hwnd;                                           /* This is the handle for our window */
-HWND TextField;
+HWND TopTextField, LeftTextField, RightTextField;
 HWND DonateButton;
 
 /*  Declare Windows procedure  */
@@ -26,7 +26,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
     //INIT
     BOOL result = FALSE;
     result = init_memory();
-    //if(result == -1) return 0;
+    if(result == -1) return 0;
 
     //GUI section
     MSG msg;            /* Here messages to the application are saved */
@@ -243,13 +243,18 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     /* handle the messages */
     switch(message) {
         case WM_CREATE:
-            TextField = CreateWindow("STATIC", INFO_MESSAGE, WS_VISIBLE | WS_CHILD | SS_CENTER, 10, 10, 474, 252, hwnd, NULL, NULL, NULL);
+            HFONT MonoSpaceFont = CreateFont(15, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Courier New"));
+            TopTextField = CreateWindow("STATIC", TOP_MESSAGE, WS_VISIBLE | WS_CHILD | SS_CENTER, 10, 10, 774, 50, hwnd, NULL, NULL, NULL);
+            LeftTextField = CreateWindow("STATIC", LEFT_MESSAGE, WS_VISIBLE | WS_CHILD | SS_LEFT, 10, 70, 382, 442, hwnd, NULL, NULL, NULL);
+            RightTextField = CreateWindow("STATIC", RIGHT_MESSAGE, WS_VISIBLE | WS_CHILD | SS_LEFT, 402, 70, 382, 442, hwnd, NULL, NULL, NULL);
+            SendMessage(LeftTextField, WM_SETFONT, (WPARAM)MonoSpaceFont, TRUE);
+            SendMessage(RightTextField, WM_SETFONT, (WPARAM)MonoSpaceFont, TRUE);
             DonateButton = CreateWindow(
                 "BUTTON",    // Predefined class
                 "DONATE",    // Button text
                 WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles
-                200,         // x position
-                272,         // y position
+                350,         // x position
+                522,         // y position
                 100,         // Button width
                 40,          // Button height
                 hwnd,        // Parent window

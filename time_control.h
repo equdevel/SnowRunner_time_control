@@ -1,7 +1,7 @@
 #ifndef TIME_CONTROL_H_INCLUDED
 #define TIME_CONTROL_H_INCLUDED
 
-#define VERSION "1.1.0"
+#define VERSION "1.1.2"
 
 #define MOD_NOREPEAT 0x4000
 #define BTN_DONATE 100
@@ -36,9 +36,39 @@
 #define ALT_5 27
 #define ALT_6 28
 
-#define INFO_MESSAGE "\n\nThe game timer is stopped and set to 12:00\n\nPlease do not close this application while the game is running!\n\n\nNumPad /    Start game timer\n\nNumPad *    Stop game timer\n\nNumPad -    Reduce timer by 2 hours\n\nNumPad +    Inrease timer by 2 hours"
-#define WINDOW_WIDTH 500
-#define WINDOW_HEIGHT 350
+#define TOP_MESSAGE "\nPlease do not close this application while the game is running!"
+#define LEFT_MESSAGE "\n"\
+                     "          NumPad*         stop time\n"\
+                     "          NumPad/         start default game time\n\n"\
+                     "          NumPad-         reduce time by 2 hours\n"\
+                     "          NumPad+         inrease time by 2 hours\n"\
+                     "   Ctrl + NumPad-         reduce time by 1 hour\n"\
+                     "   Ctrl + NumPad+         inrease time by 1 hour\n"\
+                     "  Shift + NumPad-         reduce time by 3 hours\n"\
+                     "  Shift + NumPad+         inrease time by 3 hours\n"\
+                     "    Alt + NumPad-         reduce time by 4 hours\n"\
+                     "    Alt + NumPad+         inrease time by 4 hours\n\n"\
+                     "    Alt + NumPad/         sync with real clock\n\n"\
+                     "    Alt + NumPad1         x1 (real time)\n"\
+                     "    Alt + NumPad2         x2 faster than real time\n"\
+                     "    Alt + NumPad3         x3 faster than real time\n"\
+                     "    Alt + NumPad4         x4 faster than real time\n"\
+                     "    Alt + NumPad5         x5 faster than real time\n"\
+                     "    Alt + NumPad6         x6 faster than real time\n"\
+                     "    Alt + NumPad0         x10 faster than real time"
+#define RIGHT_MESSAGE "\n"\
+                     "   Ctrl + NumPad0         set time to 00:00\n\n"\
+                     "   Ctrl + NumPad1         set time to 10:00\n\n"\
+                     "   Ctrl + NumPad2         set time to 12:00\n\n"\
+                     "   Ctrl + NumPad3         set time to 13:00\n\n"\
+                     "   Ctrl + NumPad4         set time to 14:00\n\n"\
+                     "   Ctrl + NumPad5         set time to 15:00\n\n"\
+                     "   Ctrl + NumPad6         set time to 6:00\n\n"\
+                     "   Ctrl + NumPad7         set time to 17:00\n\n"\
+                     "   Ctrl + NumPad8         set time to 18:00\n\n"\
+                     "   Ctrl + NumPad9         set time to 9:00"
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
 
 DWORD get_PID(CHAR *PrName);
 

@@ -257,9 +257,9 @@ int init_memory() {
     //WRITE TO NEW MEMORY REGION
     memset(new_mem_buf, '\x90', 50); //50 x NOP
     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
-    memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV dword ptr [r13+0x138],(float)time
-    memcpy(new_mem_buf + 15, &time, 4); //new time = 12:00
-    //memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
+    //memcpy(new_mem_buf + 8, "\x41\xC7\x85\x38\x01\x00\x00\x00\x00\x00\x00", 11); //MOV dword ptr [r13+0x138],(float)time
+    //memcpy(new_mem_buf + 15, &time, 4); //new time = 12:00
+    memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
     memcpy(new_mem_buf + 45, "\xE9", 1); //JMP opcode
     memcpy(new_mem_buf + 46, &jmp_return_offset, 4); //JMP offset
     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 50, &bytes_written);

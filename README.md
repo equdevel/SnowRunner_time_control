@@ -1,18 +1,14 @@
 ## SnowRunner time control
 
-Allows to control time in SnowRunner: start/stop and inrease/reduce timer.
+Allows to control time in SnowRunner: start/stop, inrease/reduce, rewind/forward, speed up time (x1 - x10 faster than real time) and also synchronize time with a real clock.
 
 Launch the application after SnowRunner and don't close it while the game is running.
 
+Works on all versions of SnowRunner.
+
 ### Hotkeys
 
-NumPad / &nbsp;&nbsp;&nbsp;&nbsp; Start game timer
-
-NumPad * &nbsp;&nbsp;&nbsp;&nbsp; Stop game timer
-
-NumPad - &nbsp;&nbsp;&nbsp;&nbsp; Reduce timer by 2 hours
-
-NumPad + &nbsp;&nbsp;&nbsp; Inrease timer by 2 hours
+[Hotkeys](https://github.com/equdevel/equdevel.github.io/blob/main/SnowRunner_time_control_hotkeys.png)
 
 ### Antivirus
 

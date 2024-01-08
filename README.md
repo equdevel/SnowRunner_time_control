@@ -8,7 +8,7 @@ Works on all versions of SnowRunner.
 
 ### Hotkeys
 
-[Hotkeys](https://github.com/equdevel/equdevel.github.io/blob/main/SnowRunner_time_control_hotkeys.png)
+![Hotkeys](https://github.com/equdevel/equdevel.github.io/blob/main/SnowRunner_time_control_hotkeys.png)
 
 ### Antivirus
 

@@ -14,6 +14,6 @@ Works on all versions of SnowRunner.
 
 If your antivirus complains, add the program to the exceptions (unfortunately, this is inevitable for all such programs, since they change the state of the game in RAM).
 
-If you have any doubts, check out [the report on VirusTotal](https://www.virustotal.com/gui/file/64b26414a007c436af66c39cbdaa92699eb2f90999669efaa1124a2542efd4a6?nocache=1)
+If you have any doubts, check out [the report on VirusTotal](https://www.virustotal.com/gui/file/e0286936a35ae370c5cd7f3e07e03bf4706798425d4bdf8a8a95e510b3d6ac5e)
 
 [![DONATE](https://github.com/equdevel/equdevel.github.io/blob/main/donate_banner_200px.png)](https://www.donationalerts.com/r/equdevel)

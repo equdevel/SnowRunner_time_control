@@ -1,6 +1,6 @@
 ## SnowRunner time control
 
-Allows to control time in SnowRunner: start/stop, inrease/reduce, rewind/forward, speed up time (x1 - x10 faster than real time) and also synchronize time with a real clock.
+Allows to control time in SnowRunner: start/stop, rewind/forward, speed up time (x1 - x10 faster than real time) and also synchronize time with a real clock.
 
 Launch the application after SnowRunner and don't close it while the game is running.
 

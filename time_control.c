@@ -197,8 +197,8 @@ float get_local_time() {
 }
 
 int init_memory() {
-    char *PrName = "SnowRunner.exe";
-    DWORD PID;
+    char PrName[16] = "SnowRunner.exe";
+    DWORD PID = 0;
     DWORD_PTR BaseAddress;
     BOOL result = FALSE;
     SIZE_T bytes_written = 0;
@@ -210,9 +210,15 @@ int init_memory() {
         message_box("Only one instance of this app is allowed!", MB_ICONERROR);
         return -1;
     }*/
+
     if(!(PID = get_PID(PrName))) {
-        printf("Process %s not found!\n\n", PrName);
-        message_box("SnowRunner.exe not found in memory!\n\nPlease launch SnowRunner before this app.", MB_ICONERROR);
+        strcpy(PrName, "Expeditions.exe");
+        PID = get_PID(PrName);
+    }
+
+    if(PID == 0) {
+        printf("Process %s not found!\n\n", "SnowRunner.exe or Expeditions.exe");
+        message_box("SnowRunner.exe or Expeditions.exe not found in memory!\n\nPlease launch the game before this app.", MB_ICONERROR);
         return -1;
     }
     printf("Process %s found!\n", PrName);
@@ -238,7 +244,7 @@ int init_memory() {
         printf("Found pattern address = %llx\n", pSignature);
     else {
         printf("Pattern not found in memory!\n\n");
-        message_box("Pattern not found in memory!\n\nProcess SnowRunner.exe already patched or this app may not be compatible with your version of the game.", MB_ICONERROR);
+        message_box("Pattern not found in memory!\n\nProcess already patched or this app may not be compatible with your version of the game.", MB_ICONERROR);
         return -1;
     }
 

@@ -31,7 +31,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
     //GUI section
     MSG msg;            /* Here messages to the application are saved */
     WNDCLASSEX wincl;        /* Data structure for the windowclass */
-    char WindowTitle[50] = "SnowRunner time control v";
+    char WindowTitle[50] = "SnowRunner/Expeditions time control v";
     strcat(WindowTitle, VERSION);
 
     /* The Window structure */

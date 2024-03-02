@@ -1,7 +1,7 @@
 #ifndef TIME_CONTROL_H_INCLUDED
 #define TIME_CONTROL_H_INCLUDED
 
-#define VERSION "1.1.2"
+#define VERSION "1.2.0"
 
 #define MOD_NOREPEAT 0x4000
 #define BTN_DONATE 100

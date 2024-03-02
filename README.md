@@ -1,10 +1,10 @@
-## SnowRunner time control
+## SnowRunner/Expeditions time control
 
-Allows to control time in SnowRunner: start/stop, rewind/forward, speed up time (x1 - x10 faster than real time) and also synchronize time with a real clock.
+Allows to control time in SnowRunner or Expeditions: start/stop, rewind/forward, speed up time (x1 - x10 faster than real time) and also synchronize time with a real clock.
 
-Launch the application after SnowRunner and don't close it while the game is running.
+Launch the application after SnowRunner/Expeditions and don't close it while the game is running.
 
-Works on all versions of SnowRunner.
+Works on all versions of SnowRunner/Expeditions.
 
 ### Hotkeys
 

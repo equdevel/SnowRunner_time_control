@@ -18,11 +18,19 @@ DWORD get_PID(CHAR *PrName) {
     PROCESSENTRY32 entry;
     entry.dwSize = sizeof(PROCESSENTRY32);
     HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    DWORD lastPID = 0;
+    int PrCount = 0;
     if(Process32First(snapshot, &entry)) {
         while(Process32Next(snapshot, &entry)) {
-            if(strcmp(entry.szExeFile, PrName) == 0)
-                return entry.th32ProcessID;
+            if(strcmp(entry.szExeFile, PrName) == 0) {
+                PrCount++;
+                lastPID = entry.th32ProcessID;
+            }
         }
+        if(PrCount == 1)
+            return lastPID;
+        else if(PrCount > 1)
+            return -1;
     }
     CloseHandle(snapshot);
     return 0;
@@ -205,11 +213,11 @@ int init_memory() {
     char new_mem_buf[50];
     char inj_pnt_buf[9];
 
-    /*if(get_PID("SnowRunner_time_control.exe")>0) {
+    if(get_PID("SnowRunner_time_control.exe") == -1) {
         printf("Only one instance of this app is allowed!\n\n");
         message_box("Only one instance of this app is allowed!", MB_ICONERROR);
         return -1;
-    }*/
+    }
 
     if(!(PID = get_PID(PrName))) {
         strcpy(PrName, "Expeditions.exe");

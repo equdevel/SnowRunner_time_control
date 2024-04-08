@@ -17,7 +17,7 @@ extern BOOL custom_time_rate;
 TCHAR szClassName[] = _T("SnowRunner_time_control"); /*  Make the class name into a global variable  */
 HWND hwnd;                                           /* This is the handle for our window */
 HWND TopTextField, LeftTextField, RightTextField;
-HWND DonateButton;
+HWND DonateButton, YouTubeButton, TelegramButton;
 
 /*  Declare Windows procedure  */
 LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
@@ -262,10 +262,43 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                 (HMENU)BTN_DONATE,  // menu id
                 NULL,
                 NULL);
+            YouTubeButton = CreateWindow(
+                "BUTTON",    // Predefined class
+                "YouTube",    // Button text
+                WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles
+                10,         // x position
+                522,         // y position
+                100,         // Button width
+                40,          // Button height
+                hwnd,        // Parent window
+                (HMENU)BTN_YOUTUBE,  // menu id
+                NULL,
+                NULL);
+            TelegramButton = CreateWindow(
+                "BUTTON",    // Predefined class
+                "Telegram",    // Button text
+                WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles
+                685,         // x position
+                522,         // y position
+                100,         // Button width
+                40,          // Button height
+                hwnd,        // Parent window
+                (HMENU)BTN_TELEGRAM,  // menu id
+                NULL,
+                NULL);
             break;
         case WM_COMMAND:
-            if(LOWORD(wParam) == BTN_DONATE)
-                ShellExecute(NULL, "open", "https://www.donationalerts.com/r/equdevel", NULL, NULL, SW_SHOWNORMAL);
+            switch(LOWORD(wParam)) {
+                case BTN_DONATE:
+                    ShellExecute(NULL, "open", "https://www.donationalerts.com/r/equdevel", NULL, NULL, SW_SHOWNORMAL);
+                    break;
+                case BTN_YOUTUBE:
+                    ShellExecute(NULL, "open", "https://www.youtube.com/@truck_mania", NULL, NULL, SW_SHOWNORMAL);
+                    break;
+                case BTN_TELEGRAM:
+                    ShellExecute(NULL, "open", "https://t.me/truck_mania", NULL, NULL, SW_SHOWNORMAL);
+                    break;
+            }
             break;
         case WM_TIMER:
             if(wParam == IDT_TIMER) {

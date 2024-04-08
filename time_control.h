@@ -3,8 +3,13 @@
 
 #define VERSION "1.2.1"
 
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
+
 #define MOD_NOREPEAT 0x4000
 #define BTN_DONATE 100
+#define BTN_YOUTUBE 110
+#define BTN_TELEGRAM 120
 #define IDT_TIMER 200
 
 #define MUL 1
@@ -67,8 +72,6 @@
                      "   Ctrl + NumPad7         set time to 17:00\n\n"\
                      "   Ctrl + NumPad8         set time to 18:00\n\n"\
                      "   Ctrl + NumPad9         set time to 9:00"
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
 
 DWORD get_PID(CHAR *PrName);
 

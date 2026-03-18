@@ -1,7 +1,7 @@
 #ifndef TIME_CONTROL_H_INCLUDED
 #define TIME_CONTROL_H_INCLUDED
 
-#define VERSION "1.2.2"
+#define VERSION "1.2.5"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600

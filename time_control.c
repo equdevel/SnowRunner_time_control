@@ -135,6 +135,7 @@ BOOL get_time(float *time) {
     return result;
 }
 
+//Set time and also stop it
 BOOL set_time(float *time) {
     BOOL result = FALSE;
     SIZE_T bytes_written = 0;
@@ -155,6 +156,7 @@ BOOL start_time() {
     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
     memcpy(new_mem_buf + 8, "\xF3\x41\x0F\x11\x95\x38\x01\x00\x00", 9); //MOVSS dword ptr [r13+0x138],xmm2
     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+    time_stopped = !result;
     return result;
 }
 
@@ -165,6 +167,7 @@ BOOL stop_time() {
     memset(new_mem_buf, '\x90', 45); //45 x NOP
     memcpy(new_mem_buf, "\xF3\x0F\x11\x15\x2A\x00\x00\x00", 8); //MOVSS dword ptr [offset 0x2A], xmm2 - Save game time
     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 45, &bytes_written);
+    time_stopped = result;
     return result;
 }
 
@@ -277,7 +280,7 @@ int init_memory() {
     memcpy(new_mem_buf + 45, "\xE9", 1); //JMP opcode
     memcpy(new_mem_buf + 46, &jmp_return_offset, 4); //JMP offset
     result = WriteProcessMemory(hProcess, (LPVOID)pNewMemoryRegion, new_mem_buf, 50, &bytes_written);
-    time_stopped = result;
+    //time_stopped = result;
 
     //INJECT JMP
     memcpy(inj_pnt_buf, "\xE9", 1); //JMP opcode

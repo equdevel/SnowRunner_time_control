@@ -25,8 +25,8 @@ LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
 int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, int nCmdShow) {
     //INIT
     BOOL result = FALSE;
-    //result = init_memory();
-    //if(result == -1) return 0;
+    result = init_memory();
+    if(result == -1) return 0;
 
     //GUI section
     MSG msg;            /* Here messages to the application are saved */
@@ -126,7 +126,6 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     KillTimer(hwnd, IDT_TIMER);
                     result = stop_time();
                     if(result) {
-                        time_stopped = TRUE;
                         printf("SnowRunner timer has been stopped!\n");
                     }
                     break;
@@ -135,22 +134,12 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     KillTimer(hwnd, IDT_TIMER);
                     result = start_time();
                     if(result) {
-                        time_stopped = FALSE;
                         custom_time_rate = FALSE;
                         printf("SnowRunner timer has been started!\n");
                     }
                     break;
                 case SUB:
-                    printf("\nNumPad - hotkey press has been detected!\n");
                     result = shift_time(&time, -1.0f);
-                    if(result)
-                        printf("SnowRunner timer has been reduced by 1 hour!\n");
-                    break;
-                case ADD:
-                    printf("\nNumPad + hotkey press has been detected!\n");
-                    result = shift_time(&time, 1.0f);
-                    if(result)
-                        printf("SnowRunner timer has been increased by 1 hour!\n");
                     break;
                 case CTRL_SUB:
                     result = shift_time(&time, -2.0f);
@@ -160,6 +149,9 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     break;
                 case ALT_SUB:
                     result = shift_time(&time, -4.0f);
+                    break;
+                case ADD:
+                    result = shift_time(&time, 1.0f);
                     break;
                 case CTRL_ADD:
                     result = shift_time(&time, 2.0f);
@@ -236,43 +228,43 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     break;
                 case CTRL_0:
                     time = 0.0f;
-                    result = set_time(&time);
+                    time_stopped = set_time(&time);
                     break;
                 case CTRL_1:
                     time = 10.0f;
-                    result = set_time(&time);
+                    time_stopped = set_time(&time);
                     break;
                 case CTRL_2:
                     time = 12.0f;
-                    result = set_time(&time);
+                    time_stopped = set_time(&time);
                     break;
                 case CTRL_3:
                     time = 13.0f;
-                    result = set_time(&time);
+                    time_stopped = set_time(&time);
                     break;
                 case CTRL_4:
                     time = 14.0f;
-                    result = set_time(&time);
+                    time_stopped = set_time(&time);
                     break;
                 case CTRL_5:
                     time = 15.0f;
-                    result = set_time(&time);
+                    time_stopped = set_time(&time);
                     break;
                 case CTRL_6:
                     time = 6.0f;
-                    result = set_time(&time);
+                    time_stopped = set_time(&time);
                     break;
                 case CTRL_7:
                     time = 17.0f;
-                    result = set_time(&time);
+                    time_stopped = set_time(&time);
                     break;
                 case CTRL_8:
                     time = 18.0f;
-                    result = set_time(&time);
+                    time_stopped = set_time(&time);
                     break;
                 case CTRL_9:
                     time = 9.0f;
-                    result = set_time(&time);
+                    time_stopped = set_time(&time);
                     break;
             }
         /* Translate virtual-key messages into character messages */

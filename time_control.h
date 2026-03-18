@@ -33,13 +33,26 @@
 #define CTRL_7 19
 #define CTRL_8 20
 #define CTRL_9 21
-#define ALT_0 22
-#define ALT_1 23
-#define ALT_2 24
-#define ALT_3 25
-#define ALT_4 26
-#define ALT_5 27
-#define ALT_6 28
+#define SHIFT_0 22
+#define SHIFT_1 23
+#define SHIFT_2 24
+#define SHIFT_3 25
+#define SHIFT_4 26
+#define SHIFT_5 27
+#define SHIFT_6 28
+#define SHIFT_7 29
+#define SHIFT_8 30
+#define SHIFT_9 31
+#define ALT_0 32
+#define ALT_1 33
+#define ALT_2 34
+#define ALT_3 35
+#define ALT_4 36
+#define ALT_5 37
+#define ALT_6 38
+#define ALT_7 39
+#define ALT_8 40
+#define ALT_9 41
 
 //#define TOP_MESSAGE "\nPlease do not close this application while the game is running!"
 #define LEFT_MESSAGE "\n"\

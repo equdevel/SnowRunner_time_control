@@ -161,6 +161,36 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     //KillTimer(hwnd, IDT_TIMER);
                     result = set_time_rate(&time, 1, TRUE);
                     break;
+                case SHIFT_0:
+                    result = set_time_rate(&time, 10, FALSE);
+                    break;
+                case SHIFT_1:
+                    result = set_time_rate(&time, 1, FALSE);
+                    break;
+                case SHIFT_2:
+                    result = set_time_rate(&time, 2, FALSE);
+                    break;
+                case SHIFT_3:
+                    result = set_time_rate(&time, 3, FALSE);
+                    break;
+                case SHIFT_4:
+                    result = set_time_rate(&time, 4, FALSE);
+                    break;
+                case SHIFT_5:
+                    result = set_time_rate(&time, 5, FALSE);
+                    break;
+                case SHIFT_6:
+                    result = set_time_rate(&time, 6, FALSE);
+                    break;
+                case SHIFT_7:
+                    result = set_time_rate(&time, 7, FALSE);
+                    break;
+                case SHIFT_8:
+                    result = set_time_rate(&time, 8, FALSE);
+                    break;
+                case SHIFT_9:
+                    result = set_time_rate(&time, 9, FALSE);
+                    break;
                 case ALT_0:
                     result = set_time_rate(&time, 10, FALSE);
                     break;
@@ -181,6 +211,15 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     break;
                 case ALT_6:
                     result = set_time_rate(&time, 6, FALSE);
+                    break;
+                case ALT_7:
+                    result = set_time_rate(&time, 7, FALSE);
+                    break;
+                case ALT_8:
+                    result = set_time_rate(&time, 8, FALSE);
+                    break;
+                case ALT_9:
+                    result = set_time_rate(&time, 9, FALSE);
                     break;
                 case CTRL_0:
                     time = 0.0f;

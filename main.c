@@ -203,13 +203,13 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     result = set_time_rate(&time, 1, FALSE);
                     break;
                 case ALT_2:
-                    result = set_time_rate(&time, 2, FALSE);
+                    result = set_time_rate(&time, 48, FALSE);
                     break;
                 case ALT_3:
                     result = set_time_rate(&time, 3, FALSE);
                     break;
                 case ALT_4:
-                    result = set_time_rate(&time, 4, FALSE);
+                    result = set_time_rate(&time, 96, FALSE);
                     break;
                 case ALT_5:
                     result = set_time_rate(&time, 5, FALSE);
@@ -229,42 +229,52 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                 case CTRL_0:
                     time = 0.0f;
                     time_stopped = set_time(&time);
+                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_1:
                     time = 10.0f;
                     time_stopped = set_time(&time);
+                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_2:
                     time = 12.0f;
                     time_stopped = set_time(&time);
+                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_3:
                     time = 13.0f;
                     time_stopped = set_time(&time);
+                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_4:
                     time = 14.0f;
                     time_stopped = set_time(&time);
+                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_5:
                     time = 15.0f;
                     time_stopped = set_time(&time);
+                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_6:
                     time = 6.0f;
                     time_stopped = set_time(&time);
+                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_7:
                     time = 17.0f;
                     time_stopped = set_time(&time);
+                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_8:
                     time = 18.0f;
                     time_stopped = set_time(&time);
+                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_9:
                     time = 9.0f;
                     time_stopped = set_time(&time);
+                    KillTimer(hwnd, IDT_TIMER);
                     break;
             }
         /* Translate virtual-key messages into character messages */

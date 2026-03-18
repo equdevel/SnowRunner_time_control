@@ -25,15 +25,15 @@ LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
 int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, int nCmdShow) {
     //INIT
     BOOL result = FALSE;
-    result = init_memory();
-    if(result == -1) return 0;
+    //result = init_memory();
+    //if(result == -1) return 0;
 
     //GUI section
     MSG msg;            /* Here messages to the application are saved */
     WNDCLASSEX wincl;        /* Data structure for the windowclass */
     char WindowTitle[60] = "SnowRunner/Expeditions time control v";
     strcat(WindowTitle, VERSION);
-    strcat(WindowTitle, " by equdevel");
+    strcat(WindowTitle, " by EquDevel");
 
     /* The Window structure */
     wincl.hInstance = hThisInstance;
@@ -129,18 +129,18 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     break;
                 case SUB:
                     printf("\nNumPad - hotkey press has been detected!\n");
-                    result = shift_time(&time, -2.0f);
+                    result = shift_time(&time, -1.0f);
                     if(result)
-                        printf("SnowRunner timer has been reduced by 2 hours!\n");
+                        printf("SnowRunner timer has been reduced by 1 hour!\n");
                     break;
                 case ADD:
                     printf("\nNumPad + hotkey press has been detected!\n");
-                    result = shift_time(&time, 2.0f);
+                    result = shift_time(&time, 1.0f);
                     if(result)
-                        printf("SnowRunner timer has been increased by 2 hours!\n");
+                        printf("SnowRunner timer has been increased by 1 hour!\n");
                     break;
                 case CTRL_SUB:
-                    result = shift_time(&time, -1.0f);
+                    result = shift_time(&time, -2.0f);
                     break;
                 case SHIFT_SUB:
                     result = shift_time(&time, -3.0f);
@@ -149,7 +149,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     result = shift_time(&time, -4.0f);
                     break;
                 case CTRL_ADD:
-                    result = shift_time(&time, 1.0f);
+                    result = shift_time(&time, 2.0f);
                     break;
                 case SHIFT_ADD:
                     result = shift_time(&time, 3.0f);
@@ -245,9 +245,9 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     switch(message) {
         case WM_CREATE:
             HFONT MonoSpaceFont = CreateFont(15, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Courier New"));
-            TopTextField = CreateWindow("STATIC", TOP_MESSAGE, WS_VISIBLE | WS_CHILD | SS_CENTER, 10, 10, 774, 50, hwnd, NULL, NULL, NULL);
-            LeftTextField = CreateWindow("STATIC", LEFT_MESSAGE, WS_VISIBLE | WS_CHILD | SS_LEFT, 10, 70, 382, 442, hwnd, NULL, NULL, NULL);
-            RightTextField = CreateWindow("STATIC", RIGHT_MESSAGE, WS_VISIBLE | WS_CHILD | SS_LEFT, 402, 70, 382, 442, hwnd, NULL, NULL, NULL);
+            //TopTextField = CreateWindow("STATIC", TOP_MESSAGE, WS_VISIBLE | WS_CHILD | SS_CENTER, 10, 10, 774, 50, hwnd, NULL, NULL, NULL);
+            LeftTextField = CreateWindow("STATIC", LEFT_MESSAGE, WS_VISIBLE | WS_CHILD | SS_LEFT, 10, 10, 382, 500, hwnd, NULL, NULL, NULL);
+            RightTextField = CreateWindow("STATIC", RIGHT_MESSAGE, WS_VISIBLE | WS_CHILD | SS_LEFT, 402, 10, 382, 500, hwnd, NULL, NULL, NULL);
             SendMessage(LeftTextField, WM_SETFONT, (WPARAM)MonoSpaceFont, TRUE);
             SendMessage(RightTextField, WM_SETFONT, (WPARAM)MonoSpaceFont, TRUE);
             DonateButton = CreateWindow(

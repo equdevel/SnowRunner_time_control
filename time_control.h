@@ -1,7 +1,7 @@
 #ifndef TIME_CONTROL_H_INCLUDED
 #define TIME_CONTROL_H_INCLUDED
 
-#define VERSION "1.2.1"
+#define VERSION "1.2.2"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -41,37 +41,56 @@
 #define ALT_5 27
 #define ALT_6 28
 
-#define TOP_MESSAGE "\nPlease do not close this application while the game is running!"
+//#define TOP_MESSAGE "\nPlease do not close this application while the game is running!"
 #define LEFT_MESSAGE "\n"\
+                     "  ----------------- Start/stop time -----------------\n"\
                      "          NumPad*         stop time\n"\
-                     "          NumPad/         start default game time\n\n"\
-                     "          NumPad-         reduce time by 2 hours\n"\
-                     "          NumPad+         inrease time by 2 hours\n"\
-                     "   Ctrl + NumPad-         reduce time by 1 hour\n"\
-                     "   Ctrl + NumPad+         inrease time by 1 hour\n"\
-                     "  Shift + NumPad-         reduce time by 3 hours\n"\
-                     "  Shift + NumPad+         inrease time by 3 hours\n"\
-                     "    Alt + NumPad-         reduce time by 4 hours\n"\
-                     "    Alt + NumPad+         inrease time by 4 hours\n\n"\
+                     "          NumPad/         start default game time\n"\
                      "    Alt + NumPad/         sync with real clock\n\n"\
-                     "    Alt + NumPad1         x1 (real time)\n"\
-                     "    Alt + NumPad2         x2 faster than real time\n"\
-                     "    Alt + NumPad3         x3 faster than real time\n"\
-                     "    Alt + NumPad4         x4 faster than real time\n"\
-                     "    Alt + NumPad5         x5 faster than real time\n"\
-                     "    Alt + NumPad6         x6 faster than real time\n"\
-                     "    Alt + NumPad0         x10 faster than real time"
+                     "  ------------------ Speed up time ------------------\n"\
+                     "  Shift + NumPad2         x2\n"\
+                     "  Shift + NumPad3         x3\n"\
+                     "  Shift + NumPad4         x4\n"\
+                     "  Shift + NumPad5         x5\n"\
+                     "  Shift + NumPad6         x6\n"\
+                     "  Shift + NumPad7         x7\n"\
+                     "  Shift + NumPad8         x8\n"\
+                     "  Shift + NumPad9         x9\n"\
+                     "  Shift + NumPad1         x10\n"\
+                     "  Shift + NumPad0         x12\n\n"\
+                     "  ----------------- Slow down time ------------------\n"\
+                     "    Alt + NumPad2         x2\n"\
+                     "    Alt + NumPad3         x3\n"\
+                     "    Alt + NumPad4         x4\n"\
+                     "    Alt + NumPad5         x5\n"\
+                     "    Alt + NumPad6         x6\n"\
+                     "    Alt + NumPad7         x7\n"\
+                     "    Alt + NumPad8         x8\n"\
+                     "    Alt + NumPad9         x9\n"\
+                     "    Alt + NumPad1         x10\n"\
+                     "    Alt + NumPad0         x12"
 #define RIGHT_MESSAGE "\n"\
-                     "   Ctrl + NumPad0         set time to 00:00\n\n"\
-                     "   Ctrl + NumPad1         set time to 10:00\n\n"\
-                     "   Ctrl + NumPad2         set time to 12:00\n\n"\
-                     "   Ctrl + NumPad3         set time to 13:00\n\n"\
-                     "   Ctrl + NumPad4         set time to 14:00\n\n"\
-                     "   Ctrl + NumPad5         set time to 15:00\n\n"\
-                     "   Ctrl + NumPad6         set time to 6:00\n\n"\
-                     "   Ctrl + NumPad7         set time to 17:00\n\n"\
-                     "   Ctrl + NumPad8         set time to 18:00\n\n"\
-                     "   Ctrl + NumPad9         set time to 9:00"
+                     "  ----------------- Forward time by -----------------\n"\
+                     "          NumPad+         1 hour\n"\
+                     "   Ctrl + NumPad+         2 hours\n"\
+                     "  Shift + NumPad+         3 hours\n"\
+                     "    Alt + NumPad+         4 hours\n\n"\
+                     "  ----------------- Backward time by ----------------\n"\
+                     "          NumPad-         1 hour\n"\
+                     "   Ctrl + NumPad-         2 hours\n"\
+                     "  Shift + NumPad-         3 hours\n"\
+                     "    Alt + NumPad-         4 hours\n\n"\
+                     "  ------------- Set time to and stop it -------------\n"\
+                     "   Ctrl + NumPad0         00:00\n"\
+                     "   Ctrl + NumPad1         10:00\n"\
+                     "   Ctrl + NumPad2         12:00\n"\
+                     "   Ctrl + NumPad3         13:00\n"\
+                     "   Ctrl + NumPad4         14:00\n"\
+                     "   Ctrl + NumPad5         15:00\n"\
+                     "   Ctrl + NumPad6         6:00\n"\
+                     "   Ctrl + NumPad7         17:00\n"\
+                     "   Ctrl + NumPad8         18:00\n"\
+                     "   Ctrl + NumPad9         9:00"
 
 DWORD get_PID(CHAR *PrName);
 

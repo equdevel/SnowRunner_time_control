@@ -142,8 +142,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     result = shift_time(&time, 3.0f); //shift time by +3 hours
                     break;
                 case ALT_DIV:
-                    //KillTimer(hwnd, IDT_TIMER);
-                    result = set_time_rate(&time, 1, TRUE); //sync with real clock (slow down default game time /24)
+                    result = set_time_rate(&time, 60000, TRUE); //sync with real clock (slow down default game time /24)
                     break;
                 case ALT_0:
                     KillTimer(hwnd, IDT_TIMER);
@@ -183,54 +182,54 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
                     result = set_time_rate(&time, 10000, FALSE); //slow down default game time /4
                     break;
                 case CTRL_0:
+                    KillTimer(hwnd, IDT_TIMER);
                     time = 0.0f;
                     time_stopped = set_time(&time); //set time to 00:00 and stop it
-                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_1:
+                    KillTimer(hwnd, IDT_TIMER);
                     time = 10.0f;
                     time_stopped = set_time(&time); //set time to 10:00 and stop it
-                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_2:
+                    KillTimer(hwnd, IDT_TIMER);
                     time = 12.0f;
                     time_stopped = set_time(&time); //set time to 12:00 and stop it
-                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_3:
+                    KillTimer(hwnd, IDT_TIMER);
                     time = 13.0f;
                     time_stopped = set_time(&time); //set time to 13:00 and stop it
-                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_4:
+                    KillTimer(hwnd, IDT_TIMER);
                     time = 14.0f;
                     time_stopped = set_time(&time); //set time to 14:00 and stop it
-                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_5:
+                    KillTimer(hwnd, IDT_TIMER);
                     time = 15.0f;
                     time_stopped = set_time(&time); //set time to 15:00 and stop it
-                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_6:
+                    KillTimer(hwnd, IDT_TIMER);
                     time = 6.0f;
                     time_stopped = set_time(&time); //set time to 6:00 and stop it
-                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_7:
+                    KillTimer(hwnd, IDT_TIMER);
                     time = 17.0f;
                     time_stopped = set_time(&time); //set time to 17:00 and stop it
-                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_8:
+                    KillTimer(hwnd, IDT_TIMER);
                     time = 18.0f;
                     time_stopped = set_time(&time); //set time to 18:00 and stop it
-                    KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_9:
+                    KillTimer(hwnd, IDT_TIMER);
                     time = 9.0f;
                     time_stopped = set_time(&time); //set time to 9:00 and stop it
-                    KillTimer(hwnd, IDT_TIMER);
                     break;
             }
         /* Translate virtual-key messages into character messages */

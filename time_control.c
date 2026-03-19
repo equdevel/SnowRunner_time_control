@@ -183,6 +183,8 @@ BOOL shift_time(float *time, float step) {
     return result;
 }
 
+/*
+// rate_factor - time rate factor based on real time (1 - real time)
 BOOL set_time_rate(float *time, unsigned char rate_factor, BOOL sync_real_time) {
     BOOL result = FALSE;
     if(sync_real_time)
@@ -192,6 +194,23 @@ BOOL set_time_rate(float *time, unsigned char rate_factor, BOOL sync_real_time) 
     result = set_time(time);
     if(result) {
         SetTimer(hwnd, IDT_TIMER, 60000/rate_factor, (TIMERPROC) NULL);
+        time_stopped = FALSE;
+        custom_time_rate = TRUE;
+    }
+    return result;
+}
+*/
+
+// ms_in_minute - amount of real milliseconds in one game minute (time rate factor based on default game time)
+BOOL set_time_rate(float *time, unsigned int ms_in_minute, BOOL sync_real_time) {
+    BOOL result = FALSE;
+    if(sync_real_time)
+        *time = get_local_time(); //sync with OS local time
+    else
+        get_time(time);
+    result = set_time(time);
+    if(result) {
+        SetTimer(hwnd, IDT_TIMER, ms_in_minute, (TIMERPROC) NULL);
         time_stopped = FALSE;
         custom_time_rate = TRUE;
     }

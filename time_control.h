@@ -1,7 +1,7 @@
 #ifndef TIME_CONTROL_H_INCLUDED
 #define TIME_CONTROL_H_INCLUDED
 
-#define VERSION "1.2.5"
+#define VERSION "1.3.0"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -33,77 +33,55 @@
 #define CTRL_7 19
 #define CTRL_8 20
 #define CTRL_9 21
-#define SHIFT_0 22
-#define SHIFT_1 23
-#define SHIFT_2 24
-#define SHIFT_3 25
-#define SHIFT_4 26
-#define SHIFT_5 27
-#define SHIFT_6 28
-#define SHIFT_7 29
-#define SHIFT_8 30
-#define SHIFT_9 31
-#define ALT_0 32
-#define ALT_1 33
-#define ALT_2 34
-#define ALT_3 35
-#define ALT_4 36
-#define ALT_5 37
-#define ALT_6 38
-#define ALT_7 39
-#define ALT_8 40
-#define ALT_9 41
+#define ALT_0 22
+#define ALT_1 23
+#define ALT_2 24
+#define ALT_3 25
+#define ALT_4 26
+#define ALT_5 27
+#define ALT_6 28
+#define ALT_7 29
+#define ALT_8 30
+#define ALT_9 31
 
 //#define TOP_MESSAGE "\nPlease do not close this application while the game is running!"
+
 #define LEFT_MESSAGE "\n"\
-                     "  ----------------- Start/stop time -----------------\n"\
-                     "          NumPad*         stop time\n"\
-                     "          NumPad/         start default game time\n"\
-                     "    Alt + NumPad/         sync with real clock\n\n"\
-                     "  ------------------ Speed up time ------------------\n"\
-                     "  Shift + NumPad2         x2\n"\
-                     "  Shift + NumPad3         x3\n"\
-                     "  Shift + NumPad4         x4\n"\
-                     "  Shift + NumPad5         x5\n"\
-                     "  Shift + NumPad6         x6\n"\
-                     "  Shift + NumPad7         x7\n"\
-                     "  Shift + NumPad8         x8\n"\
-                     "  Shift + NumPad9         x9\n"\
-                     "  Shift + NumPad1         x10\n"\
-                     "  Shift + NumPad0         x12\n\n"\
-                     "  ----------------- Slow down time ------------------\n"\
-                     "    Alt + NumPad2         x2\n"\
-                     "    Alt + NumPad3         x3\n"\
-                     "    Alt + NumPad4         x4\n"\
-                     "    Alt + NumPad5         x5\n"\
-                     "    Alt + NumPad6         x6\n"\
-                     "    Alt + NumPad7         x7\n"\
-                     "    Alt + NumPad8         x8\n"\
-                     "    Alt + NumPad9         x9\n"\
-                     "    Alt + NumPad1         x10\n"\
-                     "    Alt + NumPad0         x12"
+                     "  ----------------- Start/stop time -----------------\n\n"\
+                     "   Alt + NumPad0        stop time\n"\
+                     "   Alt + NumPad1        start default game time (x1)\n\n\n\n\n"\
+                     "  ------------------ Speed up time ------------------\n\n"\
+                     "   Alt + NumPad2        x2\n"\
+                     "   Alt + NumPad3        x3\n"\
+                     "   Alt + NumPad4        x4\n"\
+                     "   Alt + NumPad5        x5\n"\
+                     "   Alt + NumPad6        x6\n\n\n\n"\
+                     "  ----------------- Slow down time ------------------\n\n"\
+                     "   Alt + NumPad7        \\2\n"\
+                     "   Alt + NumPad8        \\3\n"\
+                     "   Alt + NumPad9        \\4\n"\
+                     "   Alt + NumPad/        sync time with real clock"
+
 #define RIGHT_MESSAGE "\n"\
-                     "  ----------------- Forward time by -----------------\n"\
-                     "          NumPad+         1 hour\n"\
-                     "   Ctrl + NumPad+         2 hours\n"\
-                     "  Shift + NumPad+         3 hours\n"\
-                     "    Alt + NumPad+         4 hours\n\n"\
-                     "  ----------------- Backward time by ----------------\n"\
-                     "          NumPad-         1 hour\n"\
-                     "   Ctrl + NumPad-         2 hours\n"\
-                     "  Shift + NumPad-         3 hours\n"\
-                     "    Alt + NumPad-         4 hours\n\n"\
-                     "  ------------- Set time to and stop it -------------\n"\
-                     "   Ctrl + NumPad0         00:00\n"\
-                     "   Ctrl + NumPad1         10:00\n"\
-                     "   Ctrl + NumPad2         12:00\n"\
-                     "   Ctrl + NumPad3         13:00\n"\
-                     "   Ctrl + NumPad4         14:00\n"\
-                     "   Ctrl + NumPad5         15:00\n"\
-                     "   Ctrl + NumPad6         6:00\n"\
-                     "   Ctrl + NumPad7         17:00\n"\
-                     "   Ctrl + NumPad8         18:00\n"\
-                     "   Ctrl + NumPad9         9:00"
+                     "  ----------------- Forward time by -----------------\n\n"\
+                     "   Ctrl + NumPad+        +1 hour\n"\
+                     "  Shift + NumPad+        +2 hours\n"\
+                     "    Alt + NumPad+        +3 hours\n\n\n\n"\
+                     "  ----------------- Backward time by ----------------\n\n"\
+                     "   Ctrl + NumPad-        -1 hour\n"\
+                     "  Shift + NumPad-        -2 hours\n"\
+                     "    Alt + NumPad-        -3 hours\n\n\n\n\n\n"\
+                     "  ------------- Set time to and stop it -------------\n\n"\
+                     "   Ctrl + NumPad0        00:00\n"\
+                     "   Ctrl + NumPad1        10:00\n"\
+                     "   Ctrl + NumPad2        12:00\n"\
+                     "   Ctrl + NumPad3        13:00\n"\
+                     "   Ctrl + NumPad4        14:00\n"\
+                     "   Ctrl + NumPad5        15:00\n"\
+                     "   Ctrl + NumPad6        6:00\n"\
+                     "   Ctrl + NumPad7        17:00\n"\
+                     "   Ctrl + NumPad8        18:00\n"\
+                     "   Ctrl + NumPad9        9:00"
 
 DWORD get_PID(CHAR *PrName);
 
@@ -133,7 +111,9 @@ BOOL stop_time();
 
 BOOL shift_time(float *time, float step);
 
-BOOL set_time_rate(float *time, unsigned char rate_factor, BOOL sync_real_time);
+//BOOL set_time_rate(float *time, unsigned char rate_factor, BOOL sync_real_time);
+
+BOOL set_time_rate(float *time, unsigned int ms_in_minute, BOOL sync_real_time);
 
 float get_local_time();
 

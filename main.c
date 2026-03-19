@@ -75,10 +75,12 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
     ShowWindow(hwnd, nCmdShow);
 
     /* Register HotKeys */
+    /*
     RegisterHotKey(NULL, MUL, MOD_NOREPEAT, VK_MULTIPLY);
     RegisterHotKey(NULL, DIV, MOD_NOREPEAT, VK_DIVIDE);
     RegisterHotKey(NULL, SUB, MOD_NOREPEAT, VK_SUBTRACT);
     RegisterHotKey(NULL, ADD, MOD_NOREPEAT, VK_ADD);
+    */
     RegisterHotKey(NULL, CTRL_SUB, MOD_NOREPEAT | MOD_CONTROL, VK_SUBTRACT);
     RegisterHotKey(NULL, SHIFT_SUB, MOD_NOREPEAT | MOD_SHIFT, VK_SUBTRACT);
     RegisterHotKey(NULL, ALT_SUB, MOD_NOREPEAT | MOD_ALT, VK_SUBTRACT);
@@ -86,16 +88,6 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
     RegisterHotKey(NULL, SHIFT_ADD, MOD_NOREPEAT | MOD_SHIFT, VK_ADD);
     RegisterHotKey(NULL, ALT_ADD, MOD_NOREPEAT | MOD_ALT, VK_ADD);
     RegisterHotKey(NULL, ALT_DIV, MOD_NOREPEAT | MOD_ALT, VK_DIVIDE);
-    RegisterHotKey(NULL, SHIFT_0, MOD_NOREPEAT | MOD_SHIFT, VK_NUMPAD0);
-    RegisterHotKey(NULL, SHIFT_1, MOD_NOREPEAT | MOD_SHIFT, VK_NUMPAD1);
-    RegisterHotKey(NULL, SHIFT_2, MOD_NOREPEAT | MOD_SHIFT, VK_NUMPAD2);
-    RegisterHotKey(NULL, SHIFT_3, MOD_NOREPEAT | MOD_SHIFT, VK_NUMPAD3);
-    RegisterHotKey(NULL, SHIFT_4, MOD_NOREPEAT | MOD_SHIFT, VK_NUMPAD4);
-    RegisterHotKey(NULL, SHIFT_5, MOD_NOREPEAT | MOD_SHIFT, VK_NUMPAD5);
-    RegisterHotKey(NULL, SHIFT_6, MOD_NOREPEAT | MOD_SHIFT, VK_NUMPAD6);
-    RegisterHotKey(NULL, SHIFT_7, MOD_NOREPEAT | MOD_SHIFT, VK_NUMPAD7);
-    RegisterHotKey(NULL, SHIFT_8, MOD_NOREPEAT | MOD_SHIFT, VK_NUMPAD8);
-    RegisterHotKey(NULL, SHIFT_9, MOD_NOREPEAT | MOD_SHIFT, VK_NUMPAD9);
     RegisterHotKey(NULL, ALT_0, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD0);
     RegisterHotKey(NULL, ALT_1, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD1);
     RegisterHotKey(NULL, ALT_2, MOD_NOREPEAT | MOD_ALT, VK_NUMPAD2);
@@ -121,159 +113,123 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
     while(GetMessage(&msg, NULL, 0, 0)) {
         if(msg.message == WM_HOTKEY)
             switch(msg.wParam) {
+                /*
                 case MUL:
-                    printf("\nNumPad * hotkey press has been detected!\n");
-                    KillTimer(hwnd, IDT_TIMER);
-                    result = stop_time();
-                    if(result) {
-                        printf("SnowRunner timer has been stopped!\n");
-                    }
                     break;
                 case DIV:
-                    printf("\nNumPad / hotkey press has been detected!\n");
-                    KillTimer(hwnd, IDT_TIMER);
-                    result = start_time();
-                    if(result) {
-                        custom_time_rate = FALSE;
-                        printf("SnowRunner timer has been started!\n");
-                    }
                     break;
                 case SUB:
-                    result = shift_time(&time, -1.0f);
-                    break;
-                case CTRL_SUB:
-                    result = shift_time(&time, -2.0f);
-                    break;
-                case SHIFT_SUB:
-                    result = shift_time(&time, -3.0f);
-                    break;
-                case ALT_SUB:
-                    result = shift_time(&time, -4.0f);
                     break;
                 case ADD:
-                    result = shift_time(&time, 1.0f);
+                    break;
+                */
+                case CTRL_SUB:
+                    result = shift_time(&time, -1.0f); //shift time by -1 hour
+                    break;
+                case SHIFT_SUB:
+                    result = shift_time(&time, -2.0f); //shift time by -2 hours
+                    break;
+                case ALT_SUB:
+                    result = shift_time(&time, -3.0f); //shift time by -3 hours
                     break;
                 case CTRL_ADD:
-                    result = shift_time(&time, 2.0f);
+                    result = shift_time(&time, 1.0f); //shift time by +1 hour
                     break;
                 case SHIFT_ADD:
-                    result = shift_time(&time, 3.0f);
+                    result = shift_time(&time, 2.0f); //shift time by +2 hours
                     break;
                 case ALT_ADD:
-                    result = shift_time(&time, 4.0f);
+                    result = shift_time(&time, 3.0f); //shift time by +3 hours
                     break;
                 case ALT_DIV:
                     //KillTimer(hwnd, IDT_TIMER);
-                    result = set_time_rate(&time, 1, TRUE);
-                    break;
-                case SHIFT_0:
-                    result = set_time_rate(&time, 10, FALSE);
-                    break;
-                case SHIFT_1:
-                    result = set_time_rate(&time, 1, FALSE);
-                    break;
-                case SHIFT_2:
-                    result = set_time_rate(&time, 2, FALSE);
-                    break;
-                case SHIFT_3:
-                    result = set_time_rate(&time, 3, FALSE);
-                    break;
-                case SHIFT_4:
-                    result = set_time_rate(&time, 4, FALSE);
-                    break;
-                case SHIFT_5:
-                    result = set_time_rate(&time, 5, FALSE);
-                    break;
-                case SHIFT_6:
-                    result = set_time_rate(&time, 6, FALSE);
-                    break;
-                case SHIFT_7:
-                    result = set_time_rate(&time, 7, FALSE);
-                    break;
-                case SHIFT_8:
-                    result = set_time_rate(&time, 8, FALSE);
-                    break;
-                case SHIFT_9:
-                    result = set_time_rate(&time, 9, FALSE);
+                    result = set_time_rate(&time, 1, TRUE); //sync with real clock (slow down default game time /24)
                     break;
                 case ALT_0:
-                    result = set_time_rate(&time, 10, FALSE);
+                    KillTimer(hwnd, IDT_TIMER);
+                    result = stop_time(); //stop game time
                     break;
                 case ALT_1:
-                    result = set_time_rate(&time, 1, FALSE);
+                    //start default game time (x1)
+                    //1 default game day (24 game hours) = 1 real hour
+                    //1 default game hour = 2.5 real minutes
+                    //1 default game minute = 2.5 real seconds (2500 milliseconds)
+                    KillTimer(hwnd, IDT_TIMER);
+                    result = start_time();
+                    if(result) custom_time_rate = FALSE;
                     break;
                 case ALT_2:
-                    result = set_time_rate(&time, 48, FALSE);
+                    result = set_time_rate(&time, 1250, FALSE); //speed up default game time x2
                     break;
                 case ALT_3:
-                    result = set_time_rate(&time, 3, FALSE);
+                    result = set_time_rate(&time, 833, FALSE); //speed up default game time x3
                     break;
                 case ALT_4:
-                    result = set_time_rate(&time, 96, FALSE);
+                    result = set_time_rate(&time, 625, FALSE); //speed up default game time x4
                     break;
                 case ALT_5:
-                    result = set_time_rate(&time, 5, FALSE);
+                    result = set_time_rate(&time, 500, FALSE); //speed up default game time x5
                     break;
                 case ALT_6:
-                    result = set_time_rate(&time, 6, FALSE);
+                    result = set_time_rate(&time, 417, FALSE); //speed up default game time x6
                     break;
                 case ALT_7:
-                    result = set_time_rate(&time, 7, FALSE);
+                    result = set_time_rate(&time, 5000, FALSE); //slow down default game time /2
                     break;
                 case ALT_8:
-                    result = set_time_rate(&time, 8, FALSE);
+                    result = set_time_rate(&time, 7500, FALSE); //slow down default game time /3
                     break;
                 case ALT_9:
-                    result = set_time_rate(&time, 9, FALSE);
+                    result = set_time_rate(&time, 10000, FALSE); //slow down default game time /4
                     break;
                 case CTRL_0:
                     time = 0.0f;
-                    time_stopped = set_time(&time);
+                    time_stopped = set_time(&time); //set time to 00:00 and stop it
                     KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_1:
                     time = 10.0f;
-                    time_stopped = set_time(&time);
+                    time_stopped = set_time(&time); //set time to 10:00 and stop it
                     KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_2:
                     time = 12.0f;
-                    time_stopped = set_time(&time);
+                    time_stopped = set_time(&time); //set time to 12:00 and stop it
                     KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_3:
                     time = 13.0f;
-                    time_stopped = set_time(&time);
+                    time_stopped = set_time(&time); //set time to 13:00 and stop it
                     KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_4:
                     time = 14.0f;
-                    time_stopped = set_time(&time);
+                    time_stopped = set_time(&time); //set time to 14:00 and stop it
                     KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_5:
                     time = 15.0f;
-                    time_stopped = set_time(&time);
+                    time_stopped = set_time(&time); //set time to 15:00 and stop it
                     KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_6:
                     time = 6.0f;
-                    time_stopped = set_time(&time);
+                    time_stopped = set_time(&time); //set time to 6:00 and stop it
                     KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_7:
                     time = 17.0f;
-                    time_stopped = set_time(&time);
+                    time_stopped = set_time(&time); //set time to 17:00 and stop it
                     KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_8:
                     time = 18.0f;
-                    time_stopped = set_time(&time);
+                    time_stopped = set_time(&time); //set time to 18:00 and stop it
                     KillTimer(hwnd, IDT_TIMER);
                     break;
                 case CTRL_9:
                     time = 9.0f;
-                    time_stopped = set_time(&time);
+                    time_stopped = set_time(&time); //set time to 9:00 and stop it
                     KillTimer(hwnd, IDT_TIMER);
                     break;
             }

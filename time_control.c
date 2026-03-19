@@ -220,7 +220,7 @@ BOOL set_time_rate(float *time, unsigned int ms_in_minute, BOOL sync_real_time) 
 float get_local_time() {
     SYSTEMTIME local_time;
     GetLocalTime(&local_time);
-    float result_time = local_time.wHour + local_time.wMinute / 60.0;
+    float result_time = local_time.wHour + local_time.wMinute/60.0 + local_time.wSecond/3600.0;
     //printf("\nLOCAL_TIME = %d:%d\n", local_time.wHour, local_time.wMinute);
     //printf("\nLOCAL_TIME (float) = %f\n", result_time);
     return result_time;

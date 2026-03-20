@@ -1,6 +1,6 @@
 ## SnowRunner/Expeditions time control
 
-Allows to control time in SnowRunner or Expeditions: start/stop, rewind/forward, speed up time (x1 - x10 faster than real time) and also synchronize time with a real clock.
+Allows to control time in SnowRunner or Expeditions: start/stop, backward/forward, speed up (x2-x6), slow down (x2-x4) and also synchronize time with a real clock.
 
 Launch the application after SnowRunner/Expeditions and don't close it while the game is running.
 
@@ -14,6 +14,6 @@ Works on all versions of SnowRunner/Expeditions.
 
 If your antivirus complains, add the program to the exceptions (unfortunately, this is inevitable for all such programs, since they change the state of the game in RAM).
 
-If you have any doubts, check out [the report on VirusTotal](https://www.virustotal.com/gui/file/e0286936a35ae370c5cd7f3e07e03bf4706798425d4bdf8a8a95e510b3d6ac5e)
+If you have any doubts, check out [the report on VirusTotal](https://www.virustotal.com/gui/file/099a7421af037d324b45cc36663085d4771c31bef4d57852c7d390e9d8086b09)
 
 [![DONATE](https://github.com/equdevel/equdevel.github.io/blob/main/donate_banner_200px.png)](https://www.donationalerts.com/r/equdevel)
